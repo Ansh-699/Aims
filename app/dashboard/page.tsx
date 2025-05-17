@@ -60,10 +60,9 @@ export default function DashboardPage() {
       }
     };
 
-    // Simulate loading for demo purposes
     setTimeout(() => {
       fetchData();
-    }, 1500);
+    }, 0);
   }, []);
 
   if (loading) {
@@ -75,7 +74,7 @@ export default function DashboardPage() {
               <div className="absolute inset-0 rounded-full border-4 border-gray-100"></div>
               <div className="absolute inset-0 rounded-full border-4 border-gray-800 border-t-transparent animate-spin"></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xl text-gray-500 font-medium">0%</span>
+                <span className="text-xl text-gray-500 font-medium">99%</span>
               </div>
             </div>
             <p className="text-lg font-medium text-gray-700 mb-2">
@@ -160,11 +159,11 @@ export default function DashboardPage() {
     );
   }
 
-  const percentValue = parseInt(overallPercentage) || 0;
+  const percentValue = parseFloat(overallPercentage);
 
   return (
     <main className="max-w-6xl mx-auto p-2 md:p-8 animate-fade-in">
-      <div className="flex flex-col md:flex-row items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row items-start justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-800 mb-1">
             Student Dashboard

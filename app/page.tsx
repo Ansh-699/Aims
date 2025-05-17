@@ -1,137 +1,117 @@
 "use client";
 import { useState } from "react";
-import styles from "./page.module.css"; // if you have CSS
-type Attendance = {
-  course: string;
-  present: number;
-  total: number;
-  percent: number;
-};
+import { User, Key, LogIn } from "lucide-react"; 
 
-export default function AuthPage() {
+const Index = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [attendance, setAttendance] = useState<Attendance[]>([]);
-  const [summary, setSummary] = useState<{
-    totalPresent: number;
-    totalClasses: number;
-    overallPercentage: number;
-    batch: string;
-    section: string;
-    branch: string;
-    studentId: string;
-  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
-    // 1️⃣ Login
-    const loginRes = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-    const loginData = await loginRes.json();
-    if (!loginRes.ok || !loginData.token) {
-      setMessage(loginData.msg || loginData.error || "Login failed");
+    try {
+      const loginRes = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const loginData = await loginRes.json();
+      if (!loginRes.ok || !loginData.token) {
+        setMessage(loginData.msg || loginData.error || "Login failed");
+        setLoading(false);
+        return;
+      }
+
+      localStorage.setItem("token", loginData.token);
+      window.location.href = "/dashboard";
+    } catch (error) {
+      setMessage("An error occurred. Please try again.");
       setLoading(false);
-      return;
     }
-
-    // 2️⃣ Fetch processed attendance
-    const attRes = await fetch("/api/attendance", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: loginData.token }),
-    });
-    const attData = await attRes.json();
-    if (!attRes.ok) {
-      setMessage(attData.error || "Failed to fetch attendance");
-      setLoading(false);
-      return;
-    }
-
-    // 3️⃣ Render
-    setAttendance(attData.dailyAttendance);
-    setSummary({
-      totalPresent: attData.totalPresent,
-      totalClasses: attData.totalClasses,
-      overallPercentage: attData.overallPercentage,
-      batch: attData.batch,
-      section: attData.section,
-      branch: attData.branch,
-      studentId: attData.studentId,
-    });
-
-    setLoading(false);
   };
 
-  if (loading) return <p>Loading…</p>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="p-8 rounded-lg shadow-md bg-white w-full max-w-md">
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-700"></div>
+          </div>
+          <p className="text-center mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
-      {!summary ? (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <h2 className="text-xl font-bold">Sign In</h2>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded"
-          >
-            Log In
-          </button>
-          {message && <p className="text-red-600">{message}</p>}
-        </form>
-      ) : (
-        <div>
-          <h2 className="text-xl font-bold mb-4">Attendance Summary</h2>
-          <p>
-            Batch: {summary.batch} | Section: {summary.section} | Branch:{" "}
-            {summary.branch} | Student ID: {summary.studentId}
-          </p>
-          <p>
-            Overall: {summary.totalPresent}/{summary.totalClasses} (
-            {summary.overallPercentage}%)
-          </p>
-          <table className="w-full mt-4 table-auto border-collapse">
-            <thead>
-              <tr>
-                <th className="border p-2">Course</th>
-                <th className="border p-2">Present</th>
-                <th className="border p-2">Total</th>
-                <th className="border p-2">Percent</th>
-              </tr>
-            </thead>
-            <tbody>
-              {attendance.map((rec) => (
-                <tr key={rec.course}>
-                  <td className="border p-2">{rec.course}</td>
-                  <td className="border p-2">{rec.present}</td>
-                  <td className="border p-2">{rec.total}</td>
-                  <td className="border p-2">{rec.percent}%</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="p-8 rounded-lg shadow-lg bg-white w-full max-w-md transition-all duration-300 hover:shadow-xl">
+        <div className="flex justify-center mb-6">
+          <div className="h-20 w-20 bg-gray-200 rounded-full flex items-center justify-center">
+            <User className="h-10 w-10 text-gray-600" strokeWidth={1.5} />
+          </div>
         </div>
-      )}
+        
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Sign In</h2>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <User className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="pl-10 w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-700"
+              required
+            />
+          </div>
+          
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Key className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="pl-10 w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-700"
+              required
+            />
+          </div>
+          
+          <div>
+            <button
+              type="submit"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-md transition duration-300 shadow-md hover:shadow-lg"
+            >
+              <LogIn className="h-5 w-5" />
+              <span>Sign In</span>
+            </button>
+          </div>
+          
+          {message && (
+            <div className="p-3 bg-red-100 border-l-4 border-red-500 text-red-700 rounded">
+              <p>{message}</p>
+            </div>
+          )}
+        </form>
+        
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-500">
+            Don't have an account? <a href="#" className="text-gray-800 hover:underline font-medium">Register here</a>
+          </p>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Index;

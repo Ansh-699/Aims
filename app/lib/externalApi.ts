@@ -1,4 +1,3 @@
-// lib/externalApi.ts
 import axios from "axios";
 
 const BASE = "https://abes.platform.simplifii.com/api/v1";

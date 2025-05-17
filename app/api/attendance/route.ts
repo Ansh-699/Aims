@@ -1,4 +1,3 @@
-// app/api/attendance/route.ts
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -15,7 +14,6 @@ export async function POST(req: Request) {
     }
     console.log("[attendance] token:", token.slice(0, 10) + "...");
 
-    // 1) call external API with built-in fetch
     const url =
       "https://abes.platform.simplifii.com/api/v1/custom/getCFMappedWithStudentID?embed_attendance_summary=1";
     const extRes = await fetch(url, {
@@ -43,7 +41,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2) process your data
     const totalSummary = records[records.length - 1];
     const dailyRecords = records.slice(0, -1);
 

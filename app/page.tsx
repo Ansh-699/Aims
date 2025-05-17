@@ -1,103 +1,137 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import styles from "./page.module.css"; // if you have CSS
+type Attendance = {
+  course: string;
+  present: number;
+  total: number;
+  percent: number;
+};
 
-export default function Home() {
+export default function AuthPage() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [attendance, setAttendance] = useState<Attendance[]>([]);
+  const [summary, setSummary] = useState<{
+    totalPresent: number;
+    totalClasses: number;
+    overallPercentage: number;
+    batch: string;
+    section: string;
+    branch: string;
+    studentId: string;
+  } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    // 1️⃣ Login
+    const loginRes = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+    const loginData = await loginRes.json();
+    if (!loginRes.ok || !loginData.token) {
+      setMessage(loginData.msg || loginData.error || "Login failed");
+      setLoading(false);
+      return;
+    }
+
+    // 2️⃣ Fetch processed attendance
+    const attRes = await fetch("/api/attendance", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: loginData.token }),
+    });
+    const attData = await attRes.json();
+    if (!attRes.ok) {
+      setMessage(attData.error || "Failed to fetch attendance");
+      setLoading(false);
+      return;
+    }
+
+    // 3️⃣ Render
+    setAttendance(attData.dailyAttendance);
+    setSummary({
+      totalPresent: attData.totalPresent,
+      totalClasses: attData.totalClasses,
+      overallPercentage: attData.overallPercentage,
+      batch: attData.batch,
+      section: attData.section,
+      branch: attData.branch,
+      studentId: attData.studentId,
+    });
+
+    setLoading(false);
+  };
+
+  if (loading) return <p>Loading…</p>;
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="p-8 max-w-2xl mx-auto">
+      {!summary ? (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <h2 className="text-xl font-bold">Sign In</h2>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full p-2 border rounded"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 border rounded"
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            Log In
+          </button>
+          {message && <p className="text-red-600">{message}</p>}
+        </form>
+      ) : (
+        <div>
+          <h2 className="text-xl font-bold mb-4">Attendance Summary</h2>
+          <p>
+            Batch: {summary.batch} | Section: {summary.section} | Branch:{" "}
+            {summary.branch} | Student ID: {summary.studentId}
+          </p>
+          <p>
+            Overall: {summary.totalPresent}/{summary.totalClasses} (
+            {summary.overallPercentage}%)
+          </p>
+          <table className="w-full mt-4 table-auto border-collapse">
+            <thead>
+              <tr>
+                <th className="border p-2">Course</th>
+                <th className="border p-2">Present</th>
+                <th className="border p-2">Total</th>
+                <th className="border p-2">Percent</th>
+              </tr>
+            </thead>
+            <tbody>
+              {attendance.map((rec) => (
+                <tr key={rec.course}>
+                  <td className="border p-2">{rec.course}</td>
+                  <td className="border p-2">{rec.present}</td>
+                  <td className="border p-2">{rec.total}</td>
+                  <td className="border p-2">{rec.percent}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      )}
     </div>
   );
 }

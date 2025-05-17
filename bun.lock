@@ -4,6 +4,7 @@
     "": {
       "name": "newtryaims",
       "dependencies": {
+        "@next/font": "^14.2.15",
         "@radix-ui/react-hover-card": "^1.1.13",
         "@radix-ui/react-progress": "^1.1.6",
         "@radix-ui/react-slot": "^1.2.2",
@@ -97,6 +98,8 @@
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.25", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ=="],
 
     "@next/env": ["@next/env@15.3.2", "", {}, "sha512-xURk++7P7qR9JG1jJtLzPzf0qEvqCN0A/T3DXf8IPMKo9/6FfjxtEffRJIIew/bIL4T3C2jLLqBor8B/zVlx6g=="],
+
+    "@next/font": ["@next/font@14.2.15", "", { "peerDependencies": { "next": "*" } }, "sha512-QopYhBmCDDrNDynbi+ZD1hDZXmQXVFo7TmAFp4DQgO/kogz1OLbQ92hPigJbj572eZ3GaaVxNIyYVn3/eAsehg=="],
 
     "@next/swc-darwin-arm64": ["@next/swc-darwin-arm64@15.3.2", "", { "os": "darwin", "cpu": "arm64" }, "sha512-2DR6kY/OGcokbnCsjHpNeQblqCZ85/1j6njYSkzRdpLn5At7OkSdmk7WyAmB9G0k25+VgqVZ/u356OSoQZ3z0g=="],
 

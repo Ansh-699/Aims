@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { User, Key, LogIn, Mail, AlertCircle } from "lucide-react";
-import { FloatLabel } from "primereact/floatlabel";
 
 const SignIn = () => {
   const [username, setUsername] = useState("");
@@ -58,48 +57,55 @@ const SignIn = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-6 text-white p-2">
-            {/* Username */}
+            {/* Username Input */}
             <div className="relative group">
-              <FloatLabel>
+              <div className="relative">
                 <input
                   id="username"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="peer w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent placeholder-transparent"
+                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent peer"
+                  placeholder=" "
                 />
                 <label
                   htmlFor="username"
-                  className=" pl-2  text-white/60 peer-placeholder-shown:translate-y-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-white/40 transition-all duration-200 absolute left-10 top-2.5 pointer-events-none"
+                  className="pl-2 absolute left-10 top-3.5 text-white/60 pointer-events-none transition-all duration-200 
+                    peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base
+                    peer-focus:-translate-y-8 peer-focus:text-sm
+                    -translate-y-8  text-sm"
                 >
                   Admission Number
                 </label>
-              </FloatLabel>
-              <Mail className="absolute left-3 top-3 text-white/40 group-focus-within:text-blue-500 transition-colors duration-300" />
+                <Mail className="absolute left-3 top-3.5 text-white/40 group-focus-within:text-blue-500 transition-colors duration-300" />
+              </div>
             </div>
 
-            {/* Password */}
+            {/* Password Input */}
             <div className="relative group">
-              <FloatLabel>
+              <div className="relative">
                 <input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="peer w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent placeholder-transparent"
+                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent peer"
+                  placeholder=" "
                 />
                 <label
                   htmlFor="password"
-                  className="pl-2 text-white/60 peer-placeholder-shown:translate-y-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-white/40 transition-all duration-200 absolute left-10 top-2.5 pointer-events-none"
+                  className="pl-2 absolute left-10 top-3.5 text-white/60 pointer-events-none transition-all duration-200 
+                    peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base
+                    peer-focus:-translate-y-8 peer-focus:text-sm
+                    -translate-y-8 text-sm"
                 >
                   Password
                 </label>
-              </FloatLabel>
-              <Key className="absolute left-3 top-3 text-white/40 group-focus-within:text-blue-500 transition-colors duration-300" />
+                <Key className="absolute left-3 top-3.5 text-white/40 group-focus-within:text-blue-500 transition-colors duration-300" />
+              </div>
             </div>
           </div>
 
-          {/* Error Message */}
           {message && (
             <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 animate-fadeIn">
               <AlertCircle className="h-5 w-5 text-red-500" />
@@ -107,7 +113,6 @@ const SignIn = () => {
             </div>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl transition duration-300 transform hover:translate-y-[-2px] hover:shadow-lg hover:shadow-blue-500/25 active:translate-y-0 group"

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { User, Key, LogIn, Mail, AlertCircle } from "lucide-react";
+import { FloatLabel } from "primereact/floatlabel";
 
 const SignIn = () => {
   const [username, setUsername] = useState("");
@@ -19,6 +20,7 @@ const SignIn = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
+
       const loginData = await loginRes.json();
       if (!loginRes.ok || !loginData.token) {
         setMessage(loginData.msg || loginData.error || "Login failed");
@@ -38,22 +40,6 @@ const SignIn = () => {
     alert("cry");
   };
 
-  // if (loading) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
-  //       <div className="relative bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-2xl w-full max-w-md border border-white/20 animate-fadeIn">
-  //         <div className="flex flex-col items-center justify-center gap-4">
-  //           <div className="relative w-16 h-16">
-  //             <div className="absolute inset-0 rounded-full border-4 border-white/20"></div>
-  //             <div className="absolute inset-0 rounded-full border-4 border-t-blue-500 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
-  //           </div>
-  //           <p className="text-white/80 text-lg font-medium">Signing you in...</p>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
       <div className="relative bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-2xl w-full max-w-md border border-white/20 animate-fadeIn transition-all duration-300 hover:shadow-blue-500/20">
@@ -71,36 +57,49 @@ const SignIn = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
+          <div className="space-y-6 text-white p-2">
+            {/* Username */}
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-transform duration-300 group-focus-within:scale-110">
-                <Mail className="h-5 w-5 text-white/40 group-focus-within:text-blue-500 transition-colors duration-300" />
-              </div>
-              <input
-                type="text"
-                placeholder="Username or Email"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent text-white placeholder-white/40 transition-all duration-300"
-                required
-              />
+              <FloatLabel>
+                <input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="peer w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent placeholder-transparent"
+                />
+                <label
+                  htmlFor="username"
+                  className=" pl-2  text-white/60 peer-placeholder-shown:translate-y-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-white/40 transition-all duration-200 absolute left-10 top-2.5 pointer-events-none"
+                >
+                  Admission Number
+                </label>
+              </FloatLabel>
+              <Mail className="absolute left-3 top-3 text-white/40 group-focus-within:text-blue-500 transition-colors duration-300" />
             </div>
 
+            {/* Password */}
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-transform duration-300 group-focus-within:scale-110">
-                <Key className="h-5 w-5 text-white/40 group-focus-within:text-blue-500 transition-colors duration-300" />
-              </div>
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent text-white placeholder-white/40 transition-all duration-300"
-                required
-              />
+              <FloatLabel>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="peer w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent placeholder-transparent"
+                />
+                <label
+                  htmlFor="password"
+                  className="pl-2 text-white/60 peer-placeholder-shown:translate-y-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-white/40 transition-all duration-200 absolute left-10 top-2.5 pointer-events-none"
+                >
+                  Password
+                </label>
+              </FloatLabel>
+              <Key className="absolute left-3 top-3 text-white/40 group-focus-within:text-blue-500 transition-colors duration-300" />
             </div>
           </div>
 
+          {/* Error Message */}
           {message && (
             <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 animate-fadeIn">
               <AlertCircle className="h-5 w-5 text-red-500" />
@@ -108,6 +107,7 @@ const SignIn = () => {
             </div>
           )}
 
+          {/* Submit Button */}
           <button
             type="submit"
             className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl transition duration-300 transform hover:translate-y-[-2px] hover:shadow-lg hover:shadow-blue-500/25 active:translate-y-0 group"
@@ -124,8 +124,6 @@ const SignIn = () => {
             Forgot your password?
           </button>
         </div>
-
-       
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { User, Key, LogIn, Mail, AlertCircle } from "lucide-react";
+import { LogIn, Mail, AlertCircle, Key } from "lucide-react";
+import Animation from "../public/animation2.json";
+import Lottie from "lottie-react";
 
 const SignIn = () => {
   const [username, setUsername] = useState("");
@@ -40,19 +42,19 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
-      <div className="relative bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-2xl w-full max-w-md border border-white/20 animate-fadeIn transition-all duration-300 hover:shadow-blue-500/20">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
+      <div className="relative bg-gray-800/70 backdrop-blur-lg p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700 animate-fadeIn transition-all duration-300 hover:shadow-gray-500/20">
         <div className="absolute -top-12 left-1/2 -translate-x-1/2">
-          <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl rotate-45 flex items-center justify-center shadow-xl group-hover:rotate-180 transition-transform duration-700">
-            <User className="h-12 w-12 text-white -rotate-45 group-hover:rotate-180 transition-transform duration-700" strokeWidth={1.5} />
+          <div className="w-24 h-24 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl rotate-45 flex items-center justify-center shadow-xl group-hover:rotate-180 transition-transform duration-700">
+            <Lottie animationData={Animation} style={{ height: 100 }} />
           </div>
         </div>
 
         <div className="mt-14 mb-8">
-          <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-gray-400 to-gray-500 bg-clip-text text-transparent">
             Welcome Back
           </h2>
-          <p className="text-center text-white/60 mt-2">Sign in to your account</p>
+          <p className="text-center text-gray-300 mt-2">Sign in to your account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -65,19 +67,19 @@ const SignIn = () => {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent peer"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:border-transparent peer"
                   placeholder=" "
                 />
                 <label
                   htmlFor="username"
-                  className="pl-2 absolute left-10 top-3.5 text-white/60 pointer-events-none transition-all duration-200 
+                  className="pl-2 absolute left-10 top-3.5 text-gray-300 pointer-events-none transition-all duration-200 
                     peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base
                     peer-focus:-translate-y-8 peer-focus:text-sm
                     -translate-y-8  text-sm"
                 >
                   Admission Number
                 </label>
-                <Mail className="absolute left-3 top-3.5 text-white/40 group-focus-within:text-blue-500 transition-colors duration-300" />
+                <Mail className="absolute left-3 top-3.5 text-gray-400 group-focus-within:text-gray-500 transition-colors duration-300" />
               </div>
             </div>
 
@@ -89,19 +91,19 @@ const SignIn = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent peer"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:border-transparent peer"
                   placeholder=" "
                 />
                 <label
                   htmlFor="password"
-                  className="pl-2 absolute left-10 top-3.5 text-white/60 pointer-events-none transition-all duration-200 
+                  className="pl-2 absolute left-10 top-3.5 text-gray-300 pointer-events-none transition-all duration-200 
                     peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base
                     peer-focus:-translate-y-8 peer-focus:text-sm
                     -translate-y-8 text-sm"
                 >
                   Password
                 </label>
-                <Key className="absolute left-3 top-3.5 text-white/40 group-focus-within:text-blue-500 transition-colors duration-300" />
+                <Key className="absolute left-3 top-3.5 text-gray-400 group-focus-within:text-gray-500 transition-colors duration-300" />
               </div>
             </div>
           </div>
@@ -115,7 +117,7 @@ const SignIn = () => {
 
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl transition duration-300 transform hover:translate-y-[-2px] hover:shadow-lg hover:shadow-blue-500/25 active:translate-y-0 group"
+            className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl transition duration-300 transform hover:translate-y-[-2px] hover:shadow-lg hover:shadow-gray-500/25 active:translate-y-0 group"
           >
             <LogIn className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-[-2px]" />
             <span className="font-medium transition-transform duration-300 group-hover:translate-x-[-2px]">
@@ -125,7 +127,10 @@ const SignIn = () => {
         </form>
 
         <div className="mt-8 text-center">
-          <button onClick={Cryhandler} className="text-white/60 hover:text-white text-sm transition-colors duration-300">
+          <button
+            onClick={Cryhandler}
+            className="text-gray-300 hover:text-white text-sm transition-colors duration-300"
+          >
             Forgot your password?
           </button>
         </div>

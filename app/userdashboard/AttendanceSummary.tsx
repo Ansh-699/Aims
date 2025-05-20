@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { PieChart, Clock, Award, Calendar } from "lucide-react";
+import { PieChart, Clock, Award } from "lucide-react";
 import { getStatusColor, getStatusLabel } from "../utils/statusHelpers";
 
 interface AttendanceSummaryProps {
@@ -27,31 +27,40 @@ export default function AttendanceSummary({
 
     // Animate initial percentage
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setAnimatedPercent(percentValue);
-        }, 200);
+        const timer = setTimeout(() => setAnimatedPercent(percentValue), 200);
         return () => clearTimeout(timer);
     }, [percentValue]);
 
+    // Recalculate lectures/days whenever target, present or total changes
     useEffect(() => {
-        // Calculate needed or skippable days based on target percentage
-        if (targetPercent > percentValue) {
-            // Calculate additional lectures needed
-            const requiredLectures = Math.ceil((targetPercent / 100) * totalClasses - totalPresent);
-            const daysNeeded = Math.ceil(requiredLectures / 8);
-            setCalcResult({ days: daysNeeded, lectures: requiredLectures, type: "need" });
+        const P = totalPresent;
+        const T = totalClasses;
+        const target = targetPercent / 100;
+        const current = P / T;
+
+        let lectures: number;
+        let days: number;
+        let type: "need" | "leave";
+
+        if (target > current) {
+            // Number of additional lectures needed to hit target
+            const x = (target * T - P) / (1 - target);
+            lectures = Math.ceil(x);
+            days = Math.ceil(lectures / 8);
+            type = "need";
         } else {
-            // Calculate lectures that can be skipped
-            const maxPresent = Math.floor((targetPercent / 100) * totalClasses);
-            const lecturesCanSkip = totalPresent - maxPresent;
-            const daysCanSkip = Math.floor(lecturesCanSkip / 8);
-            setCalcResult({ days: daysCanSkip, lectures: lecturesCanSkip, type: "leave" });
+            // Number of lectures that can be skipped and still maintain target
+            const x = (P - target * T) / target;
+            lectures = Math.floor(x);
+            days = Math.floor(lectures / 8);
+            type = "leave";
         }
-    }, [targetPercent, totalClasses, totalPresent, percentValue]);
+
+        setCalcResult({ days, lectures, type });
+    }, [targetPercent, totalPresent, totalClasses]);
 
     const handleScroll = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newTargetPercent = parseFloat(e.target.value);
-        setTargetPercent(newTargetPercent);
+        setTargetPercent(parseFloat(e.target.value));
     };
 
     return (
@@ -145,7 +154,7 @@ export default function AttendanceSummary({
                         {/* Status */}
                         <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                             <div className="flex items-center gap-3">
-                                <div className={`p-2 rounded-full ${bgColor} bg-opacity-20`}>
+                                <div className={`p-2 rounded-full ${bgColor} bg-opacity-20`}> 
                                     <Award className={`h-5 w-5 ${textColor}`} />
                                 </div>
                                 <div>
@@ -156,44 +165,42 @@ export default function AttendanceSummary({
                         </div>
 
                         {/* Slider & Calculation */}
-<div className="space-y-4 pt-4">
-  
+                        <div className="space-y-4 pt-4">
+                            <div className="w-full">
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    step="0.1"
+                                    value={targetPercent}
+                                    onChange={handleScroll}
+                                    className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                />
+                                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>0%</span>
+                                    <span>100%</span>
+                                </div>
+                            </div>
+                            <span className="text-sm text-gray-600">
+                                🎯 Target Attendance: <span className="font-semibold">{targetPercent.toFixed(1)}%</span>
+                            </span>
 
-  <div className="w-full">
-    <input
-      type="range"
-      min="0"
-      max="100"
-      step="0.1"
-      value={targetPercent}
-      onChange={handleScroll}
-      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-    />
-    <div className="flex justify-between text-xs text-gray-500 mt-1">
-      <span>0%</span>
-      <span>100%</span>
-    </div>
-  </div>
-  <span className="text-sm text-gray-600">
-      🎯 Target Attendance: <span className="font-semibold ">{targetPercent.toFixed(1)}%</span>
-    </span>
-
-  {calcResult && (
-    <p className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border border-blue-100 transition-all duration-300">
-      {calcResult.type === "need" ? (
-        <>
-          To maintain <strong>{targetPercent.toFixed(1)}%</strong> attendance, you must attend{" "}
-          <strong>{calcResult.lectures}</strong> more lectures (<strong>{calcResult.days}</strong> days).
-        </>
-      ) : (
-        <>
-          To keep <strong>{targetPercent.toFixed(1)}%</strong> attendance, you can miss{" "}
-          <strong>{calcResult.lectures}</strong> lectures (<strong>{calcResult.days}</strong> days).
-        </>
-      )}
-    </p>
-  )}
-</div>
+                            {calcResult && (
+                                <p className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border border-blue-100 transition-all duration-300">
+                                    {calcResult.type === "need" ? (
+                                        <>
+                                            To maintain <strong>{targetPercent.toFixed(1)}%</strong> attendance, you must attend{' '}
+                                            <strong>{calcResult.lectures}</strong> more lectures (<strong>{calcResult.days}</strong> days).
+                                        </>
+                                    ) : (
+                                        <>
+                                            To keep <strong>{targetPercent.toFixed(1)}%</strong> attendance, you can miss{' '}
+                                            <strong>{calcResult.lectures}</strong> lectures (<strong>{calcResult.days}</strong> days).
+                                        </>
+                                    )}
+                                </p>
+                            )}
+                        </div>
 
                         {/* Advice */}
                         <p className="text-sm text-gray-600 italic">

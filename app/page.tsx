@@ -27,11 +27,15 @@ const SignIn = () => {
       }
 
       localStorage.setItem("token", loginData.token);
-      window.location.href = "/userdashboard"; 
+      window.location.href = "/userdashboard";
     } catch (error) {
       setMessage("An error occurred. Please try again.");
       setLoading(false);
     }
+  };
+
+  const Cryhandler = () => {
+    alert("cry");
   };
 
   // if (loading) {
@@ -116,9 +120,9 @@ const SignIn = () => {
         </form>
 
         <div className="mt-8 text-center">
-          <a href="#" className="text-white/60 hover:text-white text-sm transition-colors duration-300">
+          <button onClick={Cryhandler} className="text-white/60 hover:text-white text-sm transition-colors duration-300">
             Forgot your password?
-          </a>
+          </button>
         </div>
 
        

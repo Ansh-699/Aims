@@ -9,11 +9,13 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    setIsSubmitting(true);
 
     try {
       const loginRes = await fetch("/api/login", {
@@ -26,6 +28,7 @@ const SignIn = () => {
       if (!loginRes.ok || !loginData.token) {
         setMessage(loginData.msg || loginData.error || "Login failed");
         setLoading(false);
+        setIsSubmitting(false);
         return;
       }
 
@@ -34,6 +37,7 @@ const SignIn = () => {
     } catch (error) {
       setMessage("An error occurred. Please try again.");
       setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -117,7 +121,10 @@ const SignIn = () => {
 
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl transition duration-300 transform hover:translate-y-[-2px] hover:shadow-lg hover:shadow-gray-500/25 active:translate-y-0 group"
+            disabled={isSubmitting}
+            className={`w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl transition duration-300 transform hover:translate-y-[-2px] hover:shadow-lg hover:shadow-gray-500/25 active:translate-y-0 group ${
+              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             <LogIn className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-[-2px]" />
             <span className="font-medium transition-transform duration-300 group-hover:translate-x-[-2px]">

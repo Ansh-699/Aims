@@ -1,8 +1,12 @@
 "use client";
+
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { LogIn, Mail, AlertCircle, Key } from "lucide-react";
-import Animation from "../public/animation2.json";
-import Lottie from "lottie-react";
+import Animation from "./animation2.json";
+
+// ✅ Dynamically import Lottie to disable SSR
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 const SignIn = () => {
   const [username, setUsername] = useState("");
@@ -79,7 +83,7 @@ const SignIn = () => {
                   className="pl-2 absolute left-10 top-3.5 text-gray-300 pointer-events-none transition-all duration-200 
                     peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base
                     peer-focus:-translate-y-8 peer-focus:text-sm
-                    -translate-y-8  text-sm"
+                    -translate-y-8 text-sm"
                 >
                   Admission Number
                 </label>

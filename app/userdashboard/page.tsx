@@ -3,10 +3,13 @@
 import React, { useState, useEffect } from "react";
 import StudentInfoCard from "./StudentInfoCard";
 import AttendanceSummary from "./AttendanceSummary";
-import CourseAttendance from "./CourseAttendance";
 import LoadingState from "./LoadingState";
 import ErrorState from "./ErrorState";
 import { AttendanceData } from "../types";
+import Link from "next/link";
+import { CalendarCheck } from "lucide-react";
+import AttendanceCalendar from "../../components/ui/attendancecalender"; // Import the calendar component
+import CourseAttendance from "./CourseAttendance";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -29,14 +32,13 @@ export default function DashboardPage() {
           body: JSON.stringify({ token }),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to fetch attendance");
+        if (!res.ok)
+          throw new Error(data.message || "Failed to fetch attendance");
 
-        // cast to your AttendanceData type
         setAttendance(data as AttendanceData);
       } catch (err: any) {
         setError(err.message);
       } finally {
-        // you can adjust or remove this delay as needed
         setTimeout(() => setLoading(false), 300);
       }
     };
@@ -60,7 +62,9 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
         <div className="w-full max-w-md p-6 bg-white rounded-xl shadow-lg">
-          <h2 className="text-xl font-bold text-gray-800 mb-2">No Records Found</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">
+            No Records Found
+          </h2>
           <p className="text-gray-600">
             We couldn’t find any attendance records for you.
           </p>
@@ -91,7 +95,9 @@ export default function DashboardPage() {
           </div>
           <div>
             <div className="text-sm text-gray-500">Student ID</div>
-            <div className="font-semibold text-gray-800">{attendance.studentId}</div>
+            <div className="font-semibold text-gray-800">
+              {attendance.studentId}
+            </div>
           </div>
         </div>
       </div>
@@ -109,7 +115,21 @@ export default function DashboardPage() {
         />
       </div>
 
-      <CourseAttendance dailyAttendance={attendance.dailyAttendance} />
+      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+        <AttendanceCalendar
+          attendanceData={{
+            studentId: parseInt(attendance.studentId),
+            totalPresentAllSubjects: attendance.totalPresent,
+            totalAbsentAllSubjects:
+              attendance.totalClasses - attendance.totalPresent,
+            subjects: attendance.subjects || {},
+          }}
+        />{" "}
+      </div>
+      <div className="bg-white rounded-xl shadow-md ">
+        <h2 className="text-2xl font-semibold mb-4">Course-wise Attendance</h2>
+        <CourseAttendance dailyAttendance={attendance.dailyAttendance} />
+      </div>
     </main>
   );
 }

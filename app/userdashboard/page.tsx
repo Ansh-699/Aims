@@ -6,9 +6,7 @@ import AttendanceSummary from "./AttendanceSummary";
 import LoadingState from "./LoadingState";
 import ErrorState from "./ErrorState";
 import { AttendanceData } from "../types";
-import Link from "next/link";
-import { CalendarCheck } from "lucide-react";
-import AttendanceCalendar from "../../components/ui/attendancecalender"; // Import the calendar component
+import AttendanceCalendar from "../../components/ui/attendancecalender";
 import CourseAttendance from "./CourseAttendance";
 
 export default function DashboardPage() {
@@ -32,8 +30,7 @@ export default function DashboardPage() {
           body: JSON.stringify({ token }),
         });
         const data = await res.json();
-        if (!res.ok)
-          throw new Error(data.message || "Failed to fetch attendance");
+        if (!res.ok) throw new Error(data.message || "Failed to fetch attendance");
 
         setAttendance(data as AttendanceData);
       } catch (err: any) {
@@ -46,28 +43,15 @@ export default function DashboardPage() {
     getData();
   }, []);
 
-  if (loading) {
-    return <LoadingState />;
-  }
+  if (loading) return <LoadingState />;
+  if (error) return <ErrorState error={error} />;
 
-  if (error) {
-    return <ErrorState error={error} />;
-  }
-
-  if (
-    !attendance ||
-    !attendance.dailyAttendance ||
-    attendance.dailyAttendance.length === 0
-  ) {
+  if (!attendance || !attendance.dailyAttendance || attendance.dailyAttendance.length === 0) {
     return (
-      <div className="min-h-screen  p-4 bg-gray-50">
+      <div className="min-h-screen p-4 bg-gray-50">
         <div className="w-full max-w-md p-6 bg-white rounded-xl shadow-lg">
-          <h2 className="text-xl font-bold text-gray-800 mb-2">
-            No Records Found
-          </h2>
-          <p className="text-gray-600">
-            We couldn’t find any attendance records for you.
-          </p>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">No Records Found</h2>
+          <p className="text-gray-600">We couldn’t find any attendance records for you.</p>
           <p className="text-sm text-gray-500 mt-4">
             Please check back later or contact support if this persists.
           </p>
@@ -78,26 +62,20 @@ export default function DashboardPage() {
 
   return (
     <main className="max-w-9xl mx-auto p-1 md:p-8 animate-fadeIn">
-      <div className="flex flex-col md:flex-row items-start justify-between mb-8">
-        <div className="mb-4 md:mb-0">
+      <div className="flex flex-col md:flex-row items-start justify-between mb-0">
+        <div className="mb-0 md:mb-0">
           <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 mb-2">
             Student Dashboard
           </h1>
-          <p className="text-gray-600">
-            Track your attendance and academic progress
-          </p>
+          <p className="text-gray-600">Track your attendance and academic progress</p>
         </div>
         <div className="flex items-center bg-white shadow-md rounded-xl px-4 py-2 border border-gray-200">
           <div className="mr-3 bg-gradient-to-br from-blue-500 to-purple-600 w-10 h-10 rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-sm">
-              {attendance.studentId}
-            </span>
+            <span className="text-white font-bold text-sm">{attendance.studentId}</span>
           </div>
           <div>
             <div className="text-sm text-gray-500">Student ID</div>
-            <div className="font-semibold text-gray-800">
-              {attendance.studentId}
-            </div>
+            <div className="font-semibold text-gray-800">{attendance.studentId}</div>
           </div>
         </div>
       </div>
@@ -115,18 +93,18 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="bg-white rounded-xl  p-1 mb-2">
+      <div className="bg-white rounded-xl p-2 mb-0">
         <AttendanceCalendar
           attendanceData={{
             studentId: parseInt(attendance.studentId),
             totalPresentAllSubjects: attendance.totalPresent,
-            totalAbsentAllSubjects:
-              attendance.totalClasses - attendance.totalPresent,
+            totalAbsentAllSubjects: attendance.totalClasses - attendance.totalPresent,
             subjects: attendance.subjects || {},
           }}
-        />{" "}
+        />
       </div>
-      <div className="bg-white  ">
+
+      <div className="bg-white rounded-xl p-2">
         <CourseAttendance dailyAttendance={attendance.dailyAttendance} />
       </div>
     </main>

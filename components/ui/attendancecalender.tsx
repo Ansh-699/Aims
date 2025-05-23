@@ -178,10 +178,10 @@ export default function AttendancePage({}: Props) {
 
   return (
     <div className="min-h-screen w-full ">
-<div className="w-full px-0 py-2">
+      <div className="w-full px-0 py-2">
         {" "}
         {/* Header */}
-        <div className="text-center mb-8"></div>
+        <div className="text-center mb-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"></div>
         <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-3">
           <Card className="p-4 md:p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200 hover:shadow-lg transition-all duration-300">
             <div className="flex items-center justify-between">
@@ -315,25 +315,26 @@ export default function AttendancePage({}: Props) {
               );
             })}
           </div>
-          {/* Selected Day Details */}
           {selectedDay && selectedDayData && (
-            <Card className="mt-1 p-2 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
-              <h3 className="text-sm font-semibold text-indigo-800 mb-2">
-                {selectedDay.toLocaleDateString("en-US", {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                })}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                <Badge className="bg-green-100 text-green-800 px-2 py-0.5 text-xs">
-                  Present: {selectedDayData.present}
-                </Badge>
-                <Badge className="bg-red-100 text-red-800 px-2 py-0.5 text-xs">
-                  Absent: {selectedDayData.absent}
-                </Badge>
-              </div>
-            </Card>
+            <div className="mt-1">
+              <Card className="p-2 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
+                <h3 className="text-sm font-semibold text-indigo-800 mb-2">
+                  {selectedDay.toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  <Badge className="bg-green-100 text-green-800 px-2 py-0.5 text-xs">
+                    Present: {selectedDayData.present}
+                  </Badge>
+                  <Badge className="bg-red-100 text-red-800 px-2 py-0.5 text-xs">
+                    Absent: {selectedDayData.absent}
+                  </Badge>
+                </div>
+              </Card>
+            </div>
           )}
         </Card>
         {/* Subject Details */}

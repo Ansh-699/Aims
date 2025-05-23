@@ -177,12 +177,12 @@ export default function AttendancePage({}: Props) {
   const selectedDayData = getSelectedDayData();
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="w-full max-w-[100vw] px-4 py-2">
+    <div className="min-h-screen w-full ">
+<div className="w-full px-0 py-2">
         {" "}
         {/* Header */}
         <div className="text-center mb-8"></div>
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-3">
           <Card className="p-4 md:p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200 hover:shadow-lg transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
@@ -217,7 +217,7 @@ export default function AttendancePage({}: Props) {
           </Card>
         </div>
         {/* Calendar */}
-        <Card className="w-full p-4 md:p-6 mb-6 bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="w-full p-1 md:p-2 mb-0 bg-white/70 ">
           {" "}
           <div className="flex justify-between items-center mb-4">
             <Button
@@ -317,7 +317,7 @@ export default function AttendancePage({}: Props) {
           </div>
           {/* Selected Day Details */}
           {selectedDay && selectedDayData && (
-            <Card className="mt-4 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
+            <Card className="mt-1 p-2 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
               <h3 className="text-sm font-semibold text-indigo-800 mb-2">
                 {selectedDay.toLocaleDateString("en-US", {
                   weekday: "short",

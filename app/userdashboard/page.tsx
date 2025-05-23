@@ -60,7 +60,7 @@ export default function DashboardPage() {
     attendance.dailyAttendance.length === 0
   ) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+      <div className="min-h-screen  p-4 bg-gray-50">
         <div className="w-full max-w-md p-6 bg-white rounded-xl shadow-lg">
           <h2 className="text-xl font-bold text-gray-800 mb-2">
             No Records Found
@@ -77,7 +77,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto p-4 md:p-8 animate-fadeIn">
+    <main className="max-w-9xl mx-auto p-1 md:p-8 animate-fadeIn">
       <div className="flex flex-col md:flex-row items-start justify-between mb-8">
         <div className="mb-4 md:mb-0">
           <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 mb-2">
@@ -102,7 +102,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-0">
         <StudentInfoCard
           branch={attendance.branch}
           batch={attendance.batch}
@@ -115,7 +115,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+      <div className="bg-white rounded-xl  p-1 mb-2">
         <AttendanceCalendar
           attendanceData={{
             studentId: parseInt(attendance.studentId),
@@ -126,8 +126,7 @@ export default function DashboardPage() {
           }}
         />{" "}
       </div>
-      <div className="bg-white rounded-xl shadow-md ">
-        <h2 className="text-2xl font-semibold mb-4">Course-wise Attendance</h2>
+      <div className="bg-white  ">
         <CourseAttendance dailyAttendance={attendance.dailyAttendance} />
       </div>
     </main>

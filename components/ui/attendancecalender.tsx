@@ -89,7 +89,7 @@ export default function AttendancePage({}: Props) {
         if (!dailyMap.has(day.date)) {
           dailyMap.set(day.date, { present: 0, absent: 0 });
         }
-        const currentDayData = dailyMap.get(day.date)!; 
+        const currentDayData = dailyMap.get(day.date)!;
         currentDayData.present += day.present;
         currentDayData.absent += day.absent;
       });
@@ -154,17 +154,16 @@ export default function AttendancePage({}: Props) {
 
     const daySummary = dailyAttendance.get(dateStr);
 
-    const totalPeriodsInDay = 8; 
+    const totalPeriodsInDay = 8;
     let presentInTooltip: number;
     let absentInTooltip: number;
 
     if (daySummary) {
       presentInTooltip = daySummary.present + daySummary.absent;
-      
       absentInTooltip = totalPeriodsInDay - presentInTooltip;
     } else {
       presentInTooltip = 0;
-      absentInTooltip = totalPeriodsInDay - 0; 
+      absentInTooltip = totalPeriodsInDay - 0;
     }
 
     if (absentInTooltip < 0) {
@@ -271,10 +270,20 @@ export default function AttendancePage({}: Props) {
                 day.date.toDateString() === new Date().toDateString();
               const isSelected =
                 selectedDay?.toDateString() === day.date.toDateString();
-              let dayStyle = "bg-gray-50 hover:bg-gray-100 border-gray-200";
-              let textColor = "text-gray-600";
-              let badgeColor = "bg-gray-200 text-gray-700";
-              if (totalLectures > 0) {
+
+              let dayStyle: string;
+              let textColor: string;
+              let badgeColor = "bg-gray-200 text-gray-700"; 
+
+              const dayOfWeek = day.date.getDay(); 
+              const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+              const isWeekendOff = isWeekend && totalLectures === 0;
+
+              if (isWeekendOff) {
+                dayStyle = "bg-gray-100 hover:bg-gray-200 border-gray-300";
+                textColor = "text-gray-500";
+                badgeColor = "bg-gray-300 text-gray-600";
+              } else if (totalLectures > 0) {
                 if (day.data.present >= day.data.absent) {
                   dayStyle =
                     "bg-gradient-to-br from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 border-green-200";
@@ -283,16 +292,21 @@ export default function AttendancePage({}: Props) {
                 } else {
                   dayStyle =
                     "bg-gradient-to-br from-red-50 to-pink-50 hover:from-red-100 hover:to-pink-100 border-red-200";
-                  textColor = "text-red-800";
+                  textColor = "text-gray-800"; 
                   badgeColor = "bg-red-200 text-red-800";
                 }
+              } else {
+                dayStyle = "bg-gray-50 hover:bg-gray-100 border-gray-200";
+                textColor = "text-gray-700";
               }
+
               if (isToday) {
-                dayStyle += " ring-1 md:ring-2 ring-indigo-500";
+                dayStyle = cn(dayStyle, "ring-1 md:ring-2 ring-indigo-500");
               }
               if (isSelected) {
-                dayStyle += " ring-1 md:ring-2 ring-purple-500";
+                dayStyle = cn(dayStyle, "ring-1 md:ring-2 ring-purple-500");
               }
+
               return (
                 <button
                   key={index}
@@ -305,9 +319,9 @@ export default function AttendancePage({}: Props) {
                   <span className={cn("text-sm font-semibold", textColor)}>
                     {day.date.getDate()}
                   </span>
-                  {totalLectures > 0 && (
+                  {(totalLectures > 0 || isWeekendOff) && (
                     <Badge className={cn("text-xxs px-1 mt-0.5", badgeColor)}>
-                      {totalLectures}
+                      {isWeekendOff ? "OFF" : totalLectures}
                     </Badge>
                   )}
                 </button>
@@ -316,7 +330,7 @@ export default function AttendancePage({}: Props) {
           </div>
 
           {/* Tooltip on Selected Day */}
-          {selectedDay && selectedDayData && (
+          {selectedDay && (
             <div className="mt-1">
               <Card className="p-2 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
                 <h3 className="text-sm font-semibold text-indigo-800">
@@ -327,12 +341,31 @@ export default function AttendancePage({}: Props) {
                   })}
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  <Badge className="bg-green-100 text-green-800 px-2 py-0.5 text-xs">
-                    Present: {selectedDayData.present}
-                  </Badge>
-                  <Badge className="bg-red-100 text-red-800 px-2 py-0.5 text-xs">
-                    Absent: {selectedDayData.absent}
-                  </Badge>
+                  {(() => {
+                    const dayOfWeek = selectedDay.getDay(); 
+                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+                    if (isWeekend) {
+                      return (
+                        <Badge className="bg-gray-300 text-gray-600 px-2 py-0.5 text-xs">
+                          OFF
+                        </Badge>
+                      );
+                    } else if (selectedDayData) {
+                      // For non-weekends, display present/absent
+                      return (
+                        <>
+                          <Badge className="bg-green-100 text-green-800 px-2 py-0.5 text-xs">
+                            Present: {selectedDayData.present}
+                          </Badge>
+                          <Badge className="bg-red-100 text-red-800 px-2 py-0.5 text-xs">
+                            Absent: {selectedDayData.absent}
+                          </Badge>
+                        </>
+                      );
+                    }
+                    return null; 
+                  })()}
                 </div>
               </Card>
             </div>

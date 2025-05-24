@@ -37,7 +37,8 @@ export default function DashboardPage() {
 
         const stored = localStorage.getItem("studentName");
         const fromApi = (data.studentName as string) || (data.student_name as string);
-        setStudentName(stored || fromApi || data.studentId);
+        // Ensure studentName is always a string to avoid charAt error
+        setStudentName(String(stored || fromApi || data.studentId || "U"));
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -121,7 +122,6 @@ export default function DashboardPage() {
 }
 
 // ----------------------
-
 
 const QuizStarter = () => {
   const [admissionNumber, setAdmissionNumber] = useState('');

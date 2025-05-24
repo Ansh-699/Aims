@@ -11,18 +11,23 @@ export async function GET(req: Request) {
   }
 
   try {
-    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const attendanceRes = await fetch(
-      `${origin}/api/attendance`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ token }),
-      }
-    );
+const origin =
+  process.env.NODE_ENV === "production"
+    ? "https://attendance-jkkwj.ondigitalocean.app"
+    : "http://localhost:3000";
+
+const attendanceRes = await fetch(
+  `${origin}/api/attendance`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify({ token }),
+  }
+);
+
     if (!attendanceRes.ok) {
       const errText = await attendanceRes.text();
       console.error("[all-attendance] /api/attendance error:", errText);

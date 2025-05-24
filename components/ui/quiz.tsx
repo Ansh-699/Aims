@@ -142,7 +142,7 @@ export default function QuizList() {
                             <ChevronLeft className="h-6 w-6" />
                         </Button>
 
-                        <div className="flex-grow flex justify-center min-w-sm px-0">
+                        <div className="flex-grow flex justify-center min-w-lg px-0">
                             <div className="w-full max-w-lg">
                                 {(() => {
                                     const quiz = quizzes[currentIndex];

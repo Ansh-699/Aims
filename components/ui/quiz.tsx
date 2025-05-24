@@ -164,50 +164,32 @@ export default function QuizList() {
         </div>
 
         {/* Quiz Card Carousel */}
-        <div className="mt-6 md:mt-8">
-          <div className="flex items-center justify-between w-full max-w-2xl mx-auto px-1 sm:px-2">
-            <Button
-              onClick={handlePrevious}
-              disabled={currentIndex === 0}
-              variant="outline"
-              size="icon"
-              className="shrink-0"
-            >
-              <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
-            </Button>
-
-            <div className="flex-grow flex justify-center min-w-0 px-2 sm:px-3">
-              <div className="w-full max-w-xs sm:max-w-sm md:max-w-md">
-                {(() => {
-                  const quiz = quizzes[currentIndex];
-                  const acc = calculateAccuracy(
-                    quiz.correct,
-                    quiz.incorrect,
-                    quiz.not_attempted
-                  );
-                  const totalQ =
-                    quiz.correct + quiz.incorrect + quiz.not_attempted;
-                  return (
-                    <QuizCard
-                      key={currentIndex}
-                      quiz={quiz}
-                      accuracy={acc}
-                      totalQuestions={totalQ}
-                    />
-                  );
-                })()}
-              </div>
+        <div className="mt-6 md:mt-8 min-w-full">
+          <div className="flex justify-center w-full max-w-lg mx-auto">
+            <div className="w-full max-w-lg sm:max-w-sm md:max-w-md">
+              {(() => {
+                const quiz = quizzes[currentIndex];
+                const acc = calculateAccuracy(
+                  quiz.correct,
+                  quiz.incorrect,
+                  quiz.not_attempted
+                );
+                const totalQ =
+                  quiz.correct + quiz.incorrect + quiz.not_attempted;
+                return (
+                  <QuizCard
+                    key={currentIndex}
+                    quiz={quiz}
+                    accuracy={acc}
+                    totalQuestions={totalQ}
+                    currentIndex={currentIndex}
+                    totalQuizzes={totalQuizzes}
+                    onPrevious={handlePrevious}
+                    onNext={handleNext}
+                  />
+                );
+              })()}
             </div>
-
-            <Button
-              onClick={handleNext}
-              disabled={currentIndex === totalQuizzes - 1}
-              variant="outline"
-              size="icon"
-              className="shrink-0"
-            >
-              <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
-            </Button>
           </div>
           <p className="text-center text-sm text-gray-600 mt-3">
             Showing quiz {currentIndex + 1} of {totalQuizzes}
@@ -247,29 +229,25 @@ function LoadingSkeleton() {
 
         {/* Quiz Card Carousel Skeleton */}
         <div className="mt-6 md:mt-8">
-          <div className="flex items-center justify-between w-full max-w-2xl mx-auto px-1 sm:px-2">
-            <Skeleton className="h-10 w-10 rounded-md shrink-0" />
-            <div className="flex-grow flex justify-center min-w-0 px-2 sm:px-3">
-              <Card className="animate-pulse w-full max-w-xs sm:max-w-sm md:max-w-md bg-white/80">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <Skeleton className="h-6 w-3/5" />
-                    <Skeleton className="h-7 w-7" />
-                  </div>
-                  <Skeleton className="h-4 w-2/5 mt-1" />
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Skeleton className="h-16 w-full" />
-                  <div className="grid grid-cols-2 gap-3">
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full col-span-2" />
-                  </div>
-                  <Skeleton className="h-5 w-1/2 mx-auto" />
-                </CardContent>
-              </Card>
-            </div>
-            <Skeleton className="h-10 w-10 rounded-md shrink-0" />
+          <div className="flex justify-center w-full max-w-2xl mx-auto">
+            <Card className="animate-pulse w-full max-w-xs sm:max-w-sm md:max-w-md bg-white/80">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-6 w-3/5" />
+                  <Skeleton className="h-7 w-7" />
+                </div>
+                <Skeleton className="h-4 w-2/5 mt-1" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Skeleton className="h-16 w-full" />
+                <div className="grid grid-cols-2 gap-3">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full col-span-2" />
+                </div>
+                <Skeleton className="h-5 w-1/2 mx-auto" />
+              </CardContent>
+            </Card>
           </div>
           <Skeleton className="h-4 w-28 mx-auto mt-3" />
         </div>
@@ -344,10 +322,18 @@ function QuizCard({
   quiz,
   accuracy,
   totalQuestions,
+  currentIndex,
+  totalQuizzes,
+  onPrevious,
+  onNext,
 }: {
   quiz: QuizItem;
   accuracy: number;
   totalQuestions: number;
+  currentIndex: number;
+  totalQuizzes: number;
+  onPrevious: () => void;
+  onNext: () => void;
 }) {
   const quizLinkHref = useMemo(() => {
     if (typeof window === "undefined") return "#";
@@ -363,7 +349,27 @@ function QuizCard({
   }, [quiz.quiz_link]);
 
   return (
-    <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 w-full">
+    <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 w-full relative">
+      <Button
+        onClick={onPrevious}
+        disabled={currentIndex === 0}
+        variant="outline"
+        size="icon"
+        className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 h-8 w-8 shadow-md"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </Button>
+      
+      <Button
+        onClick={onNext}
+        disabled={currentIndex === totalQuizzes - 1}
+        variant="outline"
+        size="icon"
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 h-8 w-8 shadow-md"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </Button>
+
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base sm:text-lg font-semibold text-gray-800 truncate pr-2">
@@ -416,7 +422,6 @@ function QuizCard({
             bg="bg-red-50"
             text="text-red-700"
           />
-          
         </div>
         <div className="text-center text-xs sm:text-sm text-gray-600 border-t pt-2 sm:pt-3">
           Total Questions:{" "}

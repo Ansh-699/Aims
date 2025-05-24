@@ -175,20 +175,23 @@ const QuizStarter = () => {
       <h2 className="text-lg font-semibold mb-4 text-gray-800">Start Quiz</h2>
       <div className="grid gap-4">
         
-        <input
-          type="text"
-          value={quizCode}
-          onChange={(e) => {
-            const v = e.target.value;
-            if (/^\d*$/.test(v) && v.length <= 4) {
-              setQuizCode(v);
-              setError('');
-            }
-          }}
-          maxLength={4}
-          placeholder="Enter 4-digit Quiz Code"
-          className={`w-full px-4 py-2 border rounded-md text-center ${error ? 'border-red-500' : 'border-gray-300'}`}
-        />
+    <input
+  type="text"
+  value={quizCode}
+  onChange={(e) => {
+    const v = e.target.value.toUpperCase();
+    if (v.length <= 4) {
+      setQuizCode(v);
+      setError('');
+    }
+  }}
+  maxLength={4}
+  placeholder="Enter 4-character Quiz Code"
+  className={`w-full px-4 py-2 border rounded-md text-center ${
+    error ? 'border-red-500' : 'border-gray-300'
+  }`}
+/>
+
         {error && <p className="text-sm text-red-600 text-center">{error}</p>}
         <button
           onClick={() => {

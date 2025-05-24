@@ -11,21 +11,20 @@ const QuizCodeInput: React.FC<QuizCodeInputProps> = ({ onCodeChange, onSubmit })
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        // Allow only digits and limit to 4 characters
-        if (/^\d*$/.test(value) && value.length <= 4) {
+        if (value.length <= 4) {
             setCode(value);
             onCodeChange(value);
-            if (error) setError(''); // Clear error if user starts typing correctly
+            if (error) setError('');
         }
     };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (code.length === 4 && /^\d{4}$/.test(code)) {
+        if (code.length === 4) {
             onSubmit(code);
             setError('');
         } else {
-            setError('Please enter a valid 4-digit code.');
+            setError('Code must be exactly 4 characters long.');
         }
     };
 
@@ -41,14 +40,13 @@ const QuizCodeInput: React.FC<QuizCodeInputProps> = ({ onCodeChange, onSubmit })
                     name="quizCode"
                     value={code}
                     onChange={handleChange}
-                    placeholder="Enter 4-digit code"
+                    placeholder="Enter 4-character code"
                     maxLength={4}
-                    pattern="\d{4}"
                     required
                     className={`w-full px-4 py-2 border rounded-md text-center text-lg
-                                            focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                                            ${error ? 'border-red-500' : 'border-gray-300'}`}
-                    aria-describedby={error ? "code-error" : undefined}
+                                focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                                ${error ? 'border-red-500' : 'border-gray-300'}`}
+                    aria-describedby={error ? 'code-error' : undefined}
                 />
                 {error && (
                     <p id="code-error" className="mt-1 text-sm text-red-600 text-center">

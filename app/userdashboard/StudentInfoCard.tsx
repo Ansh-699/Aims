@@ -26,7 +26,7 @@ export default function StudentInfoCard({ branch, batch, section }: StudentInfoC
             {branch}
           </span>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-gray-600">
             <Layers className="h-4 w-4 text-blue-500" />
@@ -36,7 +36,7 @@ export default function StudentInfoCard({ branch, batch, section }: StudentInfoC
             {batch}
           </span>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-gray-600">
             <Users className="h-4 w-4 text-purple-500" />
@@ -46,7 +46,7 @@ export default function StudentInfoCard({ branch, batch, section }: StudentInfoC
             {section}
           </span>
         </div>
-      </div>
+      </div>      
     </div>
   );
 }

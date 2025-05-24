@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { LogIn, Mail, AlertCircle, Key } from "lucide-react";
 import Animation from "./animation2.json";
 
-// ✅ Dynamically import Lottie to disable SSR
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 const SignIn = () => {

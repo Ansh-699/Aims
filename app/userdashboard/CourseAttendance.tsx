@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { BarChart, CheckCircle, BookOpen, AlertCircle } from "lucide-react";
 import { getStatusColor } from "../utils/statusHelpers";
 import { CourseAttendance as CourseAttendanceType } from "../types";
+import QuizList from "../../components/ui/quiz";
 
 interface CourseAttendanceProps {
     dailyAttendance: CourseAttendanceType[];
@@ -178,10 +179,14 @@ export default function CourseAttendance({ dailyAttendance }: CourseAttendancePr
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     );
                 })}
             </div>
+             <div className="px-0 py-1 border-t border-gray-200">
+                    <QuizList />
+                  </div>
         </div>
     );
 }

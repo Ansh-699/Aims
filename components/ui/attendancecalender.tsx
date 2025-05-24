@@ -81,7 +81,7 @@ export default function AttendancePage({}: Props) {
     string,
     { present: number; absent: number }
   > => {
-    const dailyMap = new Map();
+    const dailyMap = new Map<string, { present: number; absent: number }>();
     if (!attendanceData?.subjects) return dailyMap;
 
     Object.values(attendanceData.subjects).forEach((subject) => {
@@ -89,8 +89,9 @@ export default function AttendancePage({}: Props) {
         if (!dailyMap.has(day.date)) {
           dailyMap.set(day.date, { present: 0, absent: 0 });
         }
-        dailyMap.get(day.date).present += day.present;
-        dailyMap.get(day.date).absent += day.absent;
+        const currentDayData = dailyMap.get(day.date)!; 
+        currentDayData.present += day.present;
+        currentDayData.absent += day.absent;
       });
     });
     return dailyMap;
@@ -151,22 +152,26 @@ export default function AttendancePage({}: Props) {
       selectedDay.getMonth() + 1
     ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`;
 
-    let presentCount = 0;
+    const daySummary = dailyAttendance.get(dateStr);
 
-    if (!attendanceData?.subjects) return null;
+    const totalPeriodsInDay = 8; 
+    let presentInTooltip: number;
+    let absentInTooltip: number;
 
-    Object.values(attendanceData.subjects).forEach((subject: any) => {
-      const dayRecord = subject.daily.find((d: any) => d.date === dateStr);
-      if (dayRecord && dayRecord.present > 0) {
-        presentCount++;
-      }
-    });
+    if (daySummary) {
+      presentInTooltip = daySummary.present + daySummary.absent;
+      
+      absentInTooltip = totalPeriodsInDay - presentInTooltip;
+    } else {
+      presentInTooltip = 0;
+      absentInTooltip = totalPeriodsInDay - 0; 
+    }
 
-    const totalSubjects = 8; // You can make this dynamic too if needed
-    const present = presentCount;
-    const absent = totalSubjects - present;
+    if (absentInTooltip < 0) {
+      absentInTooltip = 0;
+    }
 
-    return { present, absent };
+    return { present: presentInTooltip, absent: absentInTooltip };
   };
 
   if (loading) return <LoadingState />;

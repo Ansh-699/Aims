@@ -154,23 +154,13 @@ export default function AttendancePage({}: Props) {
 
     const daySummary = dailyAttendance.get(dateStr);
 
-    const totalPeriodsInDay = 8;
-    let presentInTooltip: number;
-    let absentInTooltip: number;
-
     if (daySummary) {
-      presentInTooltip = daySummary.present + daySummary.absent;
-      absentInTooltip = totalPeriodsInDay - presentInTooltip;
+      // Return the actual present and absent counts for the day
+      return { present: daySummary.present, absent: daySummary.absent };
     } else {
-      presentInTooltip = 0;
-      absentInTooltip = totalPeriodsInDay - 0;
+      // If no data for the day, assume 0 present and 0 absent
+      return { present: 0, absent: 0 };
     }
-
-    if (absentInTooltip < 0) {
-      absentInTooltip = 0;
-    }
-
-    return { present: presentInTooltip, absent: absentInTooltip };
   };
 
   if (loading) return <LoadingState />;
@@ -321,7 +311,7 @@ export default function AttendancePage({}: Props) {
                   </span>
                   {(totalLectures > 0 || isWeekendOff) && (
                     <Badge className={cn("text-xxs px-1 mt-0.5", badgeColor)}>
-                      {isWeekendOff ? "OFF" : totalLectures}
+                      {isWeekendOff ? "OFF" : day.data.present}
                     </Badge>
                   )}
                 </button>
@@ -330,7 +320,7 @@ export default function AttendancePage({}: Props) {
           </div>
 
           {/* Tooltip on Selected Day */}
-          {selectedDay && (
+          {selectedDay && selectedDayData && ( // Ensure selectedDayData is not null
             <div className="mt-1">
               <Card className="p-2 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
                 <h3 className="text-sm font-semibold text-indigo-800">
@@ -345,14 +335,16 @@ export default function AttendancePage({}: Props) {
                     const dayOfWeek = selectedDay.getDay(); 
                     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
-                    if (isWeekend) {
+                    // Check if it's a weekend and if there's no specific attendance data (present/absent sum is 0)
+                    // The selectedDayData now directly reflects present/absent counts.
+                    // If it's a weekend and both present and absent are 0, it's likely an "OFF" day.
+                    if (isWeekend && selectedDayData.present === 0 && selectedDayData.absent === 0) {
                       return (
                         <Badge className="bg-gray-300 text-gray-600 px-2 py-0.5 text-xs">
                           OFF
                         </Badge>
                       );
-                    } else if (selectedDayData) {
-                      // For non-weekends, display present/absent
+                    } else { // For non-weekends, or weekends with attendance data, display present/absent
                       return (
                         <>
                           <Badge className="bg-green-100 text-green-800 px-2 py-0.5 text-xs">
@@ -364,7 +356,6 @@ export default function AttendancePage({}: Props) {
                         </>
                       );
                     }
-                    return null; 
                   })()}
                 </div>
               </Card>

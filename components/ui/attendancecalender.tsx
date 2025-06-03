@@ -263,9 +263,9 @@ export default function AttendancePage({}: Props) {
 
               let dayStyle: string;
               let textColor: string;
-              let badgeColor = "bg-gray-200 text-gray-700"; 
+              let badgeColor = "bg-gray-200 text-gray-700";
 
-              const dayOfWeek = day.date.getDay(); 
+              const dayOfWeek = day.date.getDay();
               const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
               const isWeekendOff = isWeekend && totalLectures === 0;
 
@@ -282,7 +282,7 @@ export default function AttendancePage({}: Props) {
                 } else {
                   dayStyle =
                     "bg-gradient-to-br from-red-50 to-pink-50 hover:from-red-100 hover:to-pink-100 border-red-200";
-                  textColor = "text-gray-800"; 
+                  textColor = "text-gray-800";
                   badgeColor = "bg-red-200 text-red-800";
                 }
               } else {
@@ -320,47 +320,53 @@ export default function AttendancePage({}: Props) {
           </div>
 
           {/* Tooltip on Selected Day */}
-          {selectedDay && selectedDayData && ( // Ensure selectedDayData is not null
-            <div className="mt-1">
-              <Card className="p-2 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
-                <h3 className="text-sm font-semibold text-indigo-800">
-                  {selectedDay.toLocaleDateString("en-US", {
-                    weekday: "short",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {(() => {
-                    const dayOfWeek = selectedDay.getDay(); 
-                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+          {selectedDay &&
+            selectedDayData && ( // Ensure selectedDayData is not null
+              <div className="mt-1">
+                <Card className="p-2 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
+                  <h3 className="text-sm font-semibold text-indigo-800">
+                    {selectedDay.toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {(() => {
+                      const dayOfWeek = selectedDay.getDay();
+                      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
-                    // Check if it's a weekend and if there's no specific attendance data (present/absent sum is 0)
-                    // The selectedDayData now directly reflects present/absent counts.
-                    // If it's a weekend and both present and absent are 0, it's likely an "OFF" day.
-                    if (isWeekend && selectedDayData.present === 0 && selectedDayData.absent === 0) {
-                      return (
-                        <Badge className="bg-gray-300 text-gray-600 px-2 py-0.5 text-xs">
-                          OFF
-                        </Badge>
-                      );
-                    } else { // For non-weekends, or weekends with attendance data, display present/absent
-                      return (
-                        <>
-                          <Badge className="bg-green-100 text-green-800 px-2 py-0.5 text-xs">
-                            Present: {selectedDayData.present}
+                      // Check if it's a weekend and if there's no specific attendance data (present/absent sum is 0)
+                      // The selectedDayData now directly reflects present/absent counts.
+                      // If it's a weekend and both present and absent are 0, it's likely an "OFF" day.
+                      if (
+                        isWeekend &&
+                        selectedDayData.present === 0 &&
+                        selectedDayData.absent === 0
+                      ) {
+                        return (
+                          <Badge className="bg-gray-300 text-gray-600 px-2 py-0.5 text-xs">
+                            OFF
                           </Badge>
-                          <Badge className="bg-red-100 text-red-800 px-2 py-0.5 text-xs">
-                            Absent: {selectedDayData.absent}
-                          </Badge>
-                        </>
-                      );
-                    }
-                  })()}
-                </div>
-              </Card>
-            </div>
-          )}
+                        );
+                      } else {
+                        // For non-weekends, or weekends with attendance data, display present/absent
+                        return (
+                          <>
+                            <Badge className="bg-green-100 text-green-800 px-2 py-0.5 text-xs">
+                              Present: {selectedDayData.present}
+                            </Badge>
+                            <Badge className="bg-red-100 text-red-800 px-2 py-0.5 text-xs">
+                              Absent: {selectedDayData.absent}
+                            </Badge>
+                          </>
+                        );
+                      }
+                    })()}
+                  </div>
+                </Card>
+              </div>
+            )}
         </Card>
       </div>
     </div>

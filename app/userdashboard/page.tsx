@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect } from "react";
 import StudentInfoCard from "./StudentInfoCard";
@@ -31,12 +31,14 @@ export default function DashboardPage() {
           body: JSON.stringify({ token }),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to fetch attendance");
+        if (!res.ok)
+          throw new Error(data.message || "Failed to fetch attendance");
 
         setAttendance(data as AttendanceData);
 
         const stored = localStorage.getItem("studentName");
-        const fromApi = (data.studentName as string) || (data.student_name as string);
+        const fromApi =
+          (data.studentName as string) || (data.student_name as string);
         // Ensure studentName is always a string to avoid charAt error
         setStudentName(String(stored || fromApi || data.studentId || "U"));
       } catch (err: any) {
@@ -55,8 +57,12 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen p-4 bg-gray-50">
         <div className="w-full max-w-md p-6 bg-white rounded-xl shadow-lg">
-          <h2 className="text-xl font-bold text-gray-800 mb-2">No Records Found</h2>
-          <p className="text-gray-600">We couldn’t find any attendance records for you.</p>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">
+            No Records Found
+          </h2>
+          <p className="text-gray-600">
+            We couldn’t find any attendance records for you.
+          </p>
           <p className="text-sm text-gray-500 mt-4">
             Please check back later or contact support if this persists.
           </p>
@@ -72,7 +78,9 @@ export default function DashboardPage() {
           <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 mb-2">
             Student Dashboard
           </h1>
-          <p className="text-gray-600">Track your attendance and academic progress</p>
+          <p className="text-gray-600">
+            Track your attendance and academic progress
+          </p>
         </div>
         <div className="flex items-center bg-white shadow-md rounded-xl px-4 py-2 border border-gray-200">
           <div className="mr-3 bg-gradient-to-br from-blue-500 to-purple-600 w-10 h-10 rounded-full flex items-center justify-center">
@@ -105,7 +113,8 @@ export default function DashboardPage() {
           attendanceData={{
             studentId: parseInt(attendance.studentId),
             totalPresentAllSubjects: attendance.totalPresent,
-            totalAbsentAllSubjects: attendance.totalClasses - attendance.totalPresent,
+            totalAbsentAllSubjects:
+              attendance.totalClasses - attendance.totalPresent,
             subjects: attendance.subjects || {},
           }}
         />
@@ -124,26 +133,26 @@ export default function DashboardPage() {
 // ----------------------
 
 const QuizStarter = () => {
-  const [admissionNumber, setAdmissionNumber] = useState('');
-  const [pin, setPin] = useState('');
-  const [quizCode, setQuizCode] = useState('');
+  const [admissionNumber, setAdmissionNumber] = useState("");
+  const [pin, setPin] = useState("");
+  const [quizCode, setQuizCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setAdmissionNumber(localStorage.getItem('admissionNumber') || '');
-    setPin(localStorage.getItem('studentPin') || '');
+    setAdmissionNumber(localStorage.getItem("admissionNumber") || "");
+    setPin(localStorage.getItem("studentPin") || "");
   }, []);
 
   const handleSubmit = async (code: string) => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
       const res = await fetch(
-        'https://faas-blr1-8177d592.doserverless.co/api/v1/web/fn-1c23ee6f-939a-44b2-9c4e-d17970ddd644/abes/fetchQuizDetails',
+        "https://faas-blr1-8177d592.doserverless.co/api/v1/web/fn-1c23ee6f-939a-44b2-9c4e-d17970ddd644/abes/fetchQuizDetails",
         {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             quiz_uc: code,
             user_unique_code: admissionNumber,
@@ -154,17 +163,17 @@ const QuizStarter = () => {
 
       const data = await res.json();
       const linkHtml = data?.response?.data?.[0]?.quiz_link;
-      if (!linkHtml) throw new Error('No quiz link found');
+      if (!linkHtml) throw new Error("No quiz link found");
 
       const parser = new DOMParser();
-      const doc = parser.parseFromString(linkHtml, 'text/html');
-      const href = doc.querySelector('a')?.href;
-      if (!href) throw new Error('Invalid quiz link format');
+      const doc = parser.parseFromString(linkHtml, "text/html");
+      const href = doc.querySelector("a")?.href;
+      if (!href) throw new Error("Invalid quiz link format");
 
       window.location.href = href;
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Something went wrong');
+      setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -174,23 +183,22 @@ const QuizStarter = () => {
     <div className="bg-white rounded-xl p-4 mt-6 shadow">
       <h2 className="text-lg font-semibold mb-4 text-gray-800">Start Quiz</h2>
       <div className="grid gap-4">
-        
-    <input
-  type="text"
-  value={quizCode}
-  onChange={(e) => {
-    const v = e.target.value.toUpperCase();
-    if (v.length <= 4) {
-      setQuizCode(v);
-      setError('');
-    }
-  }}
-  maxLength={4}
-  placeholder="Enter 4-character Quiz Code"
-  className={`w-full px-4 py-2 border rounded-md text-center ${
-    error ? 'border-red-500' : 'border-gray-300'
-  }`}
-/>
+        <input
+          type="text"
+          value={quizCode}
+          onChange={(e) => {
+            const v = e.target.value.toUpperCase();
+            if (v.length <= 4) {
+              setQuizCode(v);
+              setError("");
+            }
+          }}
+          maxLength={4}
+          placeholder="Enter 4-character Quiz Code"
+          className={`w-full px-4 py-2 border rounded-md text-center ${
+            error ? "border-red-500" : "border-gray-300"
+          }`}
+        />
 
         {error && <p className="text-sm text-red-600 text-center">{error}</p>}
         <button
@@ -198,13 +206,13 @@ const QuizStarter = () => {
             if (quizCode.length === 4) {
               handleSubmit(quizCode);
             } else {
-              setError('Please enter a valid 4-digit quiz code');
+              setError("Please enter a valid 4-digit quiz code");
             }
           }}
           disabled={loading || quizCode.length !== 4}
           className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
         >
-          {loading ? 'Loading...' : 'Start Quiz'}
+          {loading ? "Loading..." : "Start Quiz"}
         </button>
       </div>
     </div>

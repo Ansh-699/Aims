@@ -82,6 +82,11 @@ export default function QuizList() {
           setLoading(false);
           return;
         }
+        const sortedQuizzes = list.sort((a, b) =>
+          new Date(b.loggedin_at).getTime() -
+          new Date(a.loggedin_at).getTime()
+        );
+        setQuizzes(sortedQuizzes);
         setQuizzes(list);
 
         const first = list[0];

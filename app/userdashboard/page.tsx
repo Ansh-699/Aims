@@ -8,7 +8,7 @@ import ErrorState from "./ErrorState";
 import { AttendanceData } from "../types";
 import AttendanceCalendar from "../../components/ui/attendancecalender";
 import CourseAttendance from "./CourseAttendance";
-import { Home, Calendar, BookOpen, User } from "lucide-react"; // Import Lucide React icons
+import { Home, BookOpen, User } from "lucide-react"; // Import Lucide React icons
 import QuizList from "@/components/ui/quiz";
 
 
@@ -80,7 +80,7 @@ export default function DashboardPage() {
       case "home":
         return (
           <>
-            <div className="flex flex-col md:flex-row items-start justify-between mb-9">
+            <div className="flex flex-col md:flex-row items-start justify-between mb-9 py-10">
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 mb-2">
                   Student Dashboard
@@ -132,14 +132,14 @@ export default function DashboardPage() {
 
       case "courses":
         return (
-          <div className="bg-white rounded-xl p-2 mt-6">
+          <div className="bg-white rounded-xl ">
             <CourseAttendance dailyAttendance={attendance.dailyAttendance} />
           </div>
         );
       case "quiz":
         return (
           <>
-            <div className="px-0 py-1 border-t border-gray-200">
+            <div >
               <QuizList />
               <QuizStarter />;
             </div>

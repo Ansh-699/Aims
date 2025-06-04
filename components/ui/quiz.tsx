@@ -82,9 +82,10 @@ export default function QuizList() {
           setLoading(false);
           return;
         }
-        const sortedQuizzes = list.sort((a, b) =>
-          new Date(b.loggedin_at).getTime() -
-          new Date(a.loggedin_at).getTime()
+        const sortedQuizzes = list.sort(
+          (a, b) =>
+            new Date(b.loggedin_at).getTime() -
+            new Date(a.loggedin_at).getTime()
         );
         setQuizzes(sortedQuizzes);
         setQuizzes(list);
@@ -154,7 +155,7 @@ export default function QuizList() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-4 mb-6">
           <SummaryCard
             label="Total Quizzes"
             value={totalQuizzes}
@@ -218,19 +219,20 @@ function LoadingSkeleton() {
         </div>
 
         {/* Summary Cards Skeleton */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          {[...Array(2)].map((_, i) => (
-            <Card key={i} className="animate-pulse bg-white/70">
-              <CardContent className="p-6 flex items-center justify-between">
-                <div>
-                  <Skeleton className="h-5 w-24 mb-2" />
-                  <Skeleton className="h-8 w-12" />
-                </div>
-                <Skeleton className="h-8 w-8" />
-              </CardContent>
-            </Card>
-          ))}
+      <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-4 mb-6">
+  {[...Array(2)].map((_, i) => (
+    <Card key={i} className="animate-pulse bg-white/70 rounded-xl">
+      <CardContent className="p-4 flex items-center justify-between">
+        <div>
+          <Skeleton className="h-4 w-24 mb-2 rounded" /> {/* Label */}
+          <Skeleton className="h-6 w-16 rounded" />       {/* Value */}
         </div>
+        <Skeleton className="h-8 w-8 rounded-full" />      {/* Icon */}
+      </CardContent>
+    </Card>
+  ))}
+</div>
+
 
         {/* Quiz Card Carousel Skeleton */}
         <div className="mt-6 md:mt-8">
@@ -364,7 +366,7 @@ function QuizCard({
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      
+
       <Button
         onClick={onNext}
         disabled={currentIndex === totalQuizzes - 1}

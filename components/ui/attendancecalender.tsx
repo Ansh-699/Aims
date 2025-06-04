@@ -170,7 +170,7 @@ export default function AttendancePage({}: Props) {
   const selectedDayData = getSelectedDayData();
 
   return (
-    <div className="w-full">
+    <div className="w-full py-4">
       <div className="w-full px-0 py-2">
         {/* Header */}
         <div className="text-center mb-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"></div>

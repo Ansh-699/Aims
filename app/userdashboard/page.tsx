@@ -140,8 +140,8 @@ export default function DashboardPage() {
         return (
           <>
             <div >
-              <QuizList />
-              <QuizStarter />;
+              <QuizList  />
+              <QuizStarter />
             </div>
           </>
         );
@@ -151,7 +151,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <main className="max-w-9xl mx-auto p-5 md:p-8 animate-fadeIn pb-5 md:pb-8">
+<main className="max-w-9xl mx-auto p-5 md:p-8 pb-28 animate-fadeIn">
   {renderContent()}
 
   {/* Desktop Navbar (Detached and Translucent) */}

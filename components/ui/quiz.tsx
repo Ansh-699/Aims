@@ -144,66 +144,67 @@ export default function QuizList() {
     return <InfoMessage message="No quizzes available at the moment." />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-1">
-            Quiz Dashboard
-          </h1>
-          <p className="text-gray-600">Student: {studentName}</p>
-        </div>
+  
+  <div className="bg-gradient-to-br from-blue-50 to-indigo-100 px-4 pt-6 pb-24 min-h-[calc(100vh-5rem)] ">
+    <div className="max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-1">
+          Quiz Dashboard
+        </h1>
+        <p className="text-gray-600">Student: {studentName}</p>
+      </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-4 mb-6">
-          <SummaryCard
-            label="Total Quizzes"
-            value={totalQuizzes}
-            icon={<BookOpen className="h-8 w-8 text-blue-600" />}
-          />
-          <SummaryCard
-            label="Overall Accuracy"
-            value={`${overallAccuracy}%`}
-            icon={<CheckCircle className="h-8 w-8 text-green-600" />}
-            valueClass={getScoreColor(overallAccuracy)}
-          />
-        </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-4 mb-6">
+        <SummaryCard
+          label="Total Quizzes"
+          value={totalQuizzes}
+          icon={<BookOpen className="h-8 w-8 text-blue-600" />}
+        />
+        <SummaryCard
+          label="Overall Accuracy"
+          value={`${overallAccuracy}%`}
+          icon={<CheckCircle className="h-8 w-8 text-green-600" />}
+          valueClass={getScoreColor(overallAccuracy)}
+        />
+      </div>
 
-        {/* Quiz Card Carousel */}
-        <div className="mt-6 md:mt-8 min-w-full">
-          <div className="flex justify-center w-full max-w-lg mx-auto">
-            <div className="w-full max-w-lg sm:max-w-sm md:max-w-md">
-              {(() => {
-                const quiz = quizzes[currentIndex];
-                const acc = calculateAccuracy(
-                  quiz.correct,
-                  quiz.incorrect,
-                  quiz.not_attempted
-                );
-                const totalQ =
-                  quiz.correct + quiz.incorrect + quiz.not_attempted;
-                return (
-                  <QuizCard
-                    key={currentIndex}
-                    quiz={quiz}
-                    accuracy={acc}
-                    totalQuestions={totalQ}
-                    currentIndex={currentIndex}
-                    totalQuizzes={totalQuizzes}
-                    onPrevious={handlePrevious}
-                    onNext={handleNext}
-                  />
-                );
-              })()}
-            </div>
-          </div>
-          <p className="text-center text-sm text-gray-600 mt-3">
-            Showing quiz {currentIndex + 1} of {totalQuizzes}
-          </p>
+      {/* Quiz Card Carousel */}
+      <div className="flex justify-center w-full">
+        <div className="w-full max-w-md">
+          {(() => {
+            const quiz = quizzes[currentIndex];
+            const acc = calculateAccuracy(
+              quiz.correct,
+              quiz.incorrect,
+              quiz.not_attempted
+            );
+            const totalQ =
+              quiz.correct + quiz.incorrect + quiz.not_attempted;
+            return (
+              <QuizCard
+                key={currentIndex}
+                quiz={quiz}
+                accuracy={acc}
+                totalQuestions={totalQ}
+                currentIndex={currentIndex}
+                totalQuizzes={totalQuizzes}
+                onPrevious={handlePrevious}
+                onNext={handleNext}
+              />
+            );
+          })()}
         </div>
       </div>
+
+      <p className="text-center text-sm text-gray-600 mt-4">
+        Showing quiz {currentIndex + 1} of {totalQuizzes}
+      </p>
     </div>
-  );
+  </div>
+);
+
 }
 
 // ---------- Subcomponents & Helpers ----------

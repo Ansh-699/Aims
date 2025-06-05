@@ -260,40 +260,46 @@ const QuizStarter = () => {
     setPin(localStorage.getItem("studentPin") || "");
   }, []);
 
-  const handleSubmit = async (code: string) => {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch(
-        "https://faas-blr1-8177d592.doserverless.co/api/v1/web/fn-1c23ee6f-939a-44b2-9c4e-d17970ddd644/abes/fetchQuizDetails",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            quiz_uc: code,
-            user_unique_code: admissionNumber,
-            pin: pin,
-          }),
-        }
-      );
+const handleSubmit = async (code: string) => {
+  setLoading(true);
+  setError("");
+  try {
+    const res = await fetch(
+      "https://faas-blr1-8177d592.doserverless.co/api/v1/web/fn-1c23ee6f-939a-44b2-9c4e-d17970ddd644/abes/fetchQuizDetails",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quiz_uc: code,
+          user_unique_code: admissionNumber,
+          pin: pin,
+        }),
+      }
+    );
 
-      const data = await res.json();
-      const linkHtml = data?.response?.data?.[0]?.quiz_link;
-      if (!linkHtml) throw new Error("No quiz link found");
+    const data = await res.json();
+    const quizData = data?.response?.data;
+    if (!quizData) throw new Error("Quiz data not found");
 
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(linkHtml, "text/html");
-      const href = doc.querySelector("a")?.href;
-      if (!href) throw new Error("Invalid quiz link format");
+    // Build req_id
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    const studentId = admissionNumber;
+    const quizCode = quizData.unique_code;
+    const finalId = quizData.cf_id || quizData.course_id || quizData.id || "0000";
 
-      window.location.href = href;
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const reqIdPlain = `${today}_${studentId}_${quizCode}_${finalId}`;
+    const encodedReqId = btoa(reqIdPlain);
+
+    const targetUrl = `https://abesquiz.netlify.app/#/start-quiz?req_id=${encodedReqId}`;
+    window.location.href = targetUrl;
+  } catch (err: any) {
+    console.error(err);
+    setError(err.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="bg-white rounded-xl p-4 mt-6 shadow">

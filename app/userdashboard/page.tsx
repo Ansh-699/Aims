@@ -204,7 +204,7 @@ export default function DashboardPage() {
                 : "text-gray-600 hover:text-blue-500 hover:bg-white/20 active:bg-white/20"
             }`}
           >
-            <Home size={22} />
+            <Home size={24} />
             <span className="text-xs mt-1">Home</span>
             {activeTab === "home" && (
               <div className="absolute -bottom-1 w-1 h-1 bg-blue-600 rounded-full"></div>
@@ -219,7 +219,7 @@ export default function DashboardPage() {
                 : "text-gray-600 hover:text-blue-500 hover:bg-white/20 active:bg-white/20"
             }`}
           >
-            <BookOpen size={22} />
+            <BookOpen size={24} />
             <span className="text-xs mt-1">Courses</span>
             {activeTab === "courses" && (
               <div className="absolute -bottom-1 w-1 h-1 bg-blue-600 rounded-full"></div>
@@ -327,7 +327,7 @@ const QuizStarter = () => {
 
   return (
     <div className="bg-white rounded-xl p-4 mt-6 shadow">
-      <h2 className="text-lg font-semibold mb-4 text-gray-800">Start Quiz</h2>
+      <h2 className="text-lg font-semibold mb-0 text-gray-800">Start Quiz</h2>
       <div className="grid gap-4">
         <input
           type="text"

@@ -145,7 +145,7 @@ export default function QuizList() {
 
   return (
   
-  <div className="bg-gradient-to-br from-blue-50 to-indigo-100 px-4 pt-6 pb-24 min-h-[calc(100vh-5rem)] ">
+  <div className="bg-gradient-to-br from-blue-50 to-indigo-100 px-4 pt-6 pb-2 min-h-[calc(100vh-5rem)] ">
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-6">
@@ -198,9 +198,10 @@ export default function QuizList() {
         </div>
       </div>
 
-      <p className="text-center text-sm text-gray-600 mt-4">
-        Showing quiz {currentIndex + 1} of {totalQuizzes}
-      </p>
+     <p className="text-center text-sm text-gray-600 mt-4 px-4 max-w-full overflow-hidden">
+  Showing quiz {currentIndex + 1} of {totalQuizzes}
+</p>
+
     </div>
   </div>
 );

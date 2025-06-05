@@ -11,7 +11,6 @@ import CourseAttendance from "./CourseAttendance";
 import { Home, BookOpen, User } from "lucide-react"; // Import Lucide React icons
 import QuizList from "@/components/ui/quiz";
 
-
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [attendance, setAttendance] = useState<AttendanceData | null>(null);
@@ -129,7 +128,6 @@ export default function DashboardPage() {
           </>
         );
 
-
       case "courses":
         return (
           <div className="bg-white rounded-xl ">
@@ -139,8 +137,8 @@ export default function DashboardPage() {
       case "quiz":
         return (
           <>
-            <div >
-              <QuizList  />
+            <div>
+              <QuizList />
               <QuizStarter />
             </div>
           </>
@@ -151,97 +149,99 @@ export default function DashboardPage() {
   };
 
   return (
-<main className="max-w-9xl mx-auto p-5 md:p-8 pb-28 animate-fadeIn">
-  {renderContent()}
+    <main className="max-w-9xl mx-auto p-5 md:p-8 pb-28 animate-fadeIn">
+      {renderContent()}
 
-  {/* Desktop Navbar (Detached and Translucent) */}
-  <div className="hidden md:flex fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white/80 backdrop-blur-lg border border-gray-200/60 rounded-2xl shadow-lg px-9 py-3">
-    <div className="flex items-center space-x-5">
-      <button
-        onClick={() => setActiveTab("home")}
-        className={`flex flex-col items-center transition-colors duration-200 ${
-          activeTab === "home" ? "text-blue-600" : "text-gray-600 hover:text-blue-500"
-        }`}
-      >
-        <Home size={24} />
-        <span className="text-xs mt-1">Home</span>
-      </button>
+      {/* Desktop Navbar (Detached and Translucent) */}
+      <div className="hidden md:flex fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white/80 backdrop-blur-lg border border-gray-200/60 rounded-2xl shadow-lg px-9 py-3">
+        <div className="flex items-center space-x-5">
+          <button
+            onClick={() => setActiveTab("home")}
+            className={`flex flex-col items-center transition-colors duration-200 ${
+              activeTab === "home"
+                ? "text-blue-600"
+                : "text-gray-600 hover:text-blue-500"
+            }`}
+          >
+            <Home size={24} />
+            <span className="text-xs mt-1">Home</span>
+          </button>
 
-      <button
-        onClick={() => setActiveTab("courses")}
-        className={`flex flex-col items-center transition-colors duration-200 ${
-          activeTab === "courses" ? "text-blue-600" : "text-gray-600 hover:text-blue-500"
-        }`}
-      >
-        <BookOpen size={24} />
-        <span className="text-xs mt-1">Courses</span>
-      </button>
+          <button
+            onClick={() => setActiveTab("courses")}
+            className={`flex flex-col items-center transition-colors duration-200 ${
+              activeTab === "courses"
+                ? "text-blue-600"
+                : "text-gray-600 hover:text-blue-500"
+            }`}
+          >
+            <BookOpen size={24} />
+            <span className="text-xs mt-1">Courses</span>
+          </button>
 
-      <button
-        onClick={() => setActiveTab("quiz")}
-        className={`flex flex-col items-center transition-colors duration-200 ${
-          activeTab === "quiz" ? "text-blue-600" : "text-gray-600 hover:text-blue-500"
-        }`}
-      >
-        <User size={24} />
-        <span className="text-xs mt-1">Quiz</span>
-      </button>
-    </div>
-  </div>
-
+          <button
+            onClick={() => setActiveTab("quiz")}
+            className={`flex flex-col items-center transition-colors duration-200 ${
+              activeTab === "quiz"
+                ? "text-blue-600"
+                : "text-gray-600 hover:text-blue-500"
+            }`}
+          >
+            <User size={24} />
+            <span className="text-xs mt-1">Quiz</span>
+          </button>
+        </div>
+      </div>
 
       {/* Mobile Bottom Navbar (Detached and Translucent) */}
-    <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/60 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl px-4 py-2 transition-all duration-300 max-w-xs w-full">
-  <div className="flex justify-between items-center gap-x-6 whitespace-nowrap">
-    <button
-      onClick={() => setActiveTab("home")}
-      className={`relative flex flex-col items-center p-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${
-        activeTab === "home"
-          ? "text-blue-600 bg-white/30"
-          : "text-gray-600 hover:text-blue-500 hover:bg-white/20 active:bg-white/20"
-      }`}
-    >
-      <Home size={22} />
-      <span className="text-xs mt-1">Home</span>
-      {activeTab === "home" && (
-        <div className="absolute -bottom-1 w-1 h-1 bg-blue-600 rounded-full"></div>
-      )}
-    </button>
+      <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/60 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl px-4 py-2 transition-all duration-300 max-w-xs w-full">
+        <div className="flex justify-between items-center gap-x-6 whitespace-nowrap">
+          <button
+            onClick={() => setActiveTab("home")}
+            className={`relative flex flex-col items-center p-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${
+              activeTab === "home"
+                ? "text-blue-600 bg-white/30"
+                : "text-gray-600 hover:text-blue-500 hover:bg-white/20 active:bg-white/20"
+            }`}
+          >
+            <Home size={22} />
+            <span className="text-xs mt-1">Home</span>
+            {activeTab === "home" && (
+              <div className="absolute -bottom-1 w-1 h-1 bg-blue-600 rounded-full"></div>
+            )}
+          </button>
 
-    <button
-      onClick={() => setActiveTab("courses")}
-      className={`relative flex flex-col items-center p-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${
-        activeTab === "courses"
-          ? "text-blue-600 bg-white/30"
-          : "text-gray-600 hover:text-blue-500 hover:bg-white/20 active:bg-white/20"
-      }`}
-    >
-      <BookOpen size={22} />
-      <span className="text-xs mt-1">Courses</span>
-      {activeTab === "courses" && (
-        <div className="absolute -bottom-1 w-1 h-1 bg-blue-600 rounded-full"></div>
-      )}
-    </button>
+          <button
+            onClick={() => setActiveTab("courses")}
+            className={`relative flex flex-col items-center p-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${
+              activeTab === "courses"
+                ? "text-blue-600 bg-white/30"
+                : "text-gray-600 hover:text-blue-500 hover:bg-white/20 active:bg-white/20"
+            }`}
+          >
+            <BookOpen size={22} />
+            <span className="text-xs mt-1">Courses</span>
+            {activeTab === "courses" && (
+              <div className="absolute -bottom-1 w-1 h-1 bg-blue-600 rounded-full"></div>
+            )}
+          </button>
 
-    <button
-      onClick={() => setActiveTab("quiz")}
-      className={`relative flex flex-col items-center p-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${
-        activeTab === "quiz"
-          ? "text-blue-600 bg-white/30"
-          : "text-gray-600 hover:text-blue-500 hover:bg-white/20 active:bg-white/20"
-      }`}
-    >
-      <User size={22} />
-      <span className="text-xs mt-1">Quiz</span>
-      {activeTab === "quiz" && (
-        <div className="absolute -bottom-1 w-1 h-1 bg-blue-600 rounded-full"></div>
-      )}
-    </button>
-  </div>
-</div>
-
-
-
+          <button
+            onClick={() => setActiveTab("quiz")}
+            className={`relative flex flex-col items-center p-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${
+              activeTab === "quiz"
+                ? "text-blue-600 bg-white/30"
+                : "text-gray-600 hover:text-blue-500 hover:bg-white/20 active:bg-white/20"
+            }`}
+          >
+            <User size={22} />
+            <span className="text-xs mt-1">Quiz</span>
+            {activeTab === "quiz" && (
+              <div className="absolute -bottom-1 w-1 h-1 bg-blue-600 rounded-full"></div>
+            )}
+          </button>
+        </div>
+      </div>
     </main>
   );
 }
@@ -254,52 +254,76 @@ const QuizStarter = () => {
   const [quizCode, setQuizCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [countdown, setCountdown] = useState(0); // seconds until quiz starts
+  const [quizStartTime, setQuizStartTime] = useState<Date | null>(null);
 
   useEffect(() => {
     setAdmissionNumber(localStorage.getItem("admissionNumber") || "");
     setPin(localStorage.getItem("studentPin") || "");
   }, []);
 
-const handleSubmit = async (code: string) => {
-  setLoading(true);
-  setError("");
-  try {
-    const res = await fetch(
-      "https://faas-blr1-8177d592.doserverless.co/api/v1/web/fn-1c23ee6f-939a-44b2-9c4e-d17970ddd644/abes/fetchQuizDetails",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          quiz_uc: code,
-          user_unique_code: admissionNumber,
-          pin: pin,
-        }),
+  useEffect(() => {
+    if (countdown <= 0 || !quizStartTime) return;
+
+    const interval = setInterval(() => {
+      const now = new Date();
+      const diff = Math.floor((quizStartTime.getTime() - now.getTime()) / 1000);
+      setCountdown(diff > 0 ? diff : 0);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [quizStartTime, countdown]);
+
+  const handleSubmit = async (code: string) => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(
+        "https://faas-blr1-8177d592.doserverless.co/api/v1/web/fn-1c23ee6f-939a-44b2-9c4e-d17970ddd644/abes/fetchQuizDetails",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            quiz_uc: code,
+            user_unique_code: admissionNumber,
+            pin: pin,
+          }),
+        }
+      );
+
+      const data = await res.json();
+      const quizData = data?.response?.data;
+      if (!quizData) throw new Error("Quiz data not found");
+
+      const startTime = new Date(quizData.start_time);
+      const now = new Date();
+
+      if (startTime > now) {
+        const secondsLeft = Math.floor(
+          (startTime.getTime() - now.getTime()) / 1000
+        );
+        setCountdown(secondsLeft);
+        setQuizStartTime(startTime);
+        return; 
       }
-    );
 
-    const data = await res.json();
-    const quizData = data?.response?.data;
-    if (!quizData) throw new Error("Quiz data not found");
+      const today = new Date().toISOString().split("T")[0];
+      const studentId = admissionNumber;
+      const quizCode = code;
+      const finalId = quizData.cf_id;
 
-    // Build req_id
-    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-    const studentId = admissionNumber;
-    const quizCode = quizData.unique_code;
-    const finalId = quizData.cf_id || quizData.course_id || quizData.id || "0000";
+      const reqIdPlain = `${today}_${studentId}_${quizCode}_${finalId}`;
+      const encodedReqId = btoa(reqIdPlain);
 
-    const reqIdPlain = `${today}_${studentId}_${quizCode}_${finalId}`;
-    const encodedReqId = btoa(reqIdPlain);
-
-    const targetUrl = `https://abesquiz.netlify.app/#/start-quiz?req_id=${encodedReqId}`;
-    window.location.href = targetUrl;
-  } catch (err: any) {
-    console.error(err);
-    setError(err.message || "Something went wrong");
-  } finally {
-    setLoading(false);
-  }
-};
-
+      const targetUrl = `https://abesquiz.netlify.app/#/start-quiz?req_id=${encodedReqId}`;
+      window.location.href = targetUrl;
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-white rounded-xl p-4 mt-6 shadow">
@@ -323,6 +347,14 @@ const handleSubmit = async (code: string) => {
         />
 
         {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+
+        {countdown > 0 && (
+          <p className="text-center text-gray-500">
+            Quiz starts in: {Math.floor(countdown / 60)}:
+            {String(countdown % 60).padStart(2, "0")}
+          </p>
+        )}
+
         <button
           onClick={() => {
             if (quizCode.length === 4) {
@@ -331,7 +363,7 @@ const handleSubmit = async (code: string) => {
               setError("Please enter a valid 4-digit quiz code");
             }
           }}
-          disabled={loading || quizCode.length !== 4}
+          disabled={loading || quizCode.length !== 4 || countdown > 0}
           className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
         >
           {loading ? "Loading..." : "Start Quiz"}

@@ -295,7 +295,7 @@ const QuizStarter = () => {
       const quizData = data?.response?.data;
       if (!quizData) throw new Error("Quiz data not found");
 
-      const startTime = new Date(quizData.start_time);
+      const startTime = new Date(quizData.login_time);
       const now = new Date();
 
       if (startTime > now) {

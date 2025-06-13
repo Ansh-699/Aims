@@ -38,7 +38,7 @@ export interface AttendanceData {
   subjects: Record<string, SubjectSummary>;
 }
 
-export default function AttendancePage({}: Props) {
+export default function AttendancePage({ }: Props) {
   const [loading, setLoading] = useState(true);
   const [attendanceData, setAttendanceData] = useState<AttendanceData | null>(
     null
@@ -170,45 +170,46 @@ export default function AttendancePage({}: Props) {
   const selectedDayData = getSelectedDayData();
 
   return (
-    <div className="w-full py-4">
+    <div className="w-full py-0">
       <div className="w-full px-0 py-2">
         {/* Header */}
-        <div className="text-center mb-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"></div>
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-3">
+        <div className="text-center mb-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 "></div>
+        <div className="w-full grid grid-cols-2 gap-2 mb-3 pb-3">
           {/* Present Lecture Card */}
-          <Card className="p-4 md:p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200 hover:shadow-lg transition-all duration-300">
+          <Card className="p-3 bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 hover:shadow-lg transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-600 mb-1">
+                <p className="text-xs font-medium text-blue-600 mb-1">
                   Present Lecture
                 </p>
-                <p className="text-2xl md:text-3xl font-bold text-blue-700">
+                <p className="text-xl font-bold text-blue-700">
                   {attendanceData.totalPresentAllSubjects}
                 </p>
               </div>
-              <div className="p-2 md:p-3 bg-blue-100 rounded-full">
-                <Users className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
+              <div className="p-2 bg-blue-100 rounded-full">
+                <Users className="h-5 w-5 text-blue-600" />
               </div>
             </div>
           </Card>
 
           {/* Absent Lecture Card */}
-          <Card className="p-4 md:p-6 bg-gradient-to-br from-red-50 to-pink-50 border-red-200 hover:shadow-lg transition-all duration-300">
+          <Card className="p-3 bg-gradient-to-br from-red-50 to-pink-50 border border-red-200 hover:shadow-lg transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-red-600 mb-1">
+                <p className="text-xs font-medium text-red-600 mb-1">
                   Absent Lecture
                 </p>
-                <p className="text-2xl md:text-3xl font-bold text-red-700">
+                <p className="text-xl font-bold text-red-700">
                   {attendanceData.totalAbsentAllSubjects}
                 </p>
               </div>
-              <div className="p-2 md:p-3 bg-red-100 rounded-full">
-                <TrendingDown className="h-5 w-5 md:h-6 md:w-6 text-red-600" />
+              <div className="p-2 bg-red-100 rounded-full">
+                <TrendingDown className="h-5 w-5 text-red-600" />
               </div>
             </div>
           </Card>
         </div>
+
 
         {/* Calendar Section */}
         <Card className="w-full p-1 md:p-2 mb-0 bg-white/70">

@@ -145,7 +145,7 @@ export default function QuizList() {
 
   return (
   
-  <div className="bg-gradient-to-br from-blue-50 to-indigo-100 px-4 pt-6 pb-2 min-h-[calc(100vh-5rem)] ">
+  <div className="bg-gradient-to-br from-blue-50 to-indigo-100 px-4 pt-6 pb-2 min-h-[calc(80vh-5rem)] ">
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-6">
@@ -212,7 +212,7 @@ export default function QuizList() {
 
 function LoadingSkeleton() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6">
+<div className="bg-gradient-to-br from-blue-50 to-indigo-100 px-4 pt-6 pb-2 min-h-[calc(80vh-5rem)]">
       <div className="max-w-7xl mx-auto">
         {/* Header Skeleton */}
         <div className="mb-6">

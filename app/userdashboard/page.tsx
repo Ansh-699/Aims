@@ -79,7 +79,7 @@ export default function DashboardPage() {
       case "home":
         return (
           <>
-            <div className="flex flex-col md:flex-row items-start justify-between mb-9 py-10">
+            <div className="flex flex-col md:flex-row items-start justify-between  py-1">
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 mb-2">
                   Student Dashboard
@@ -149,7 +149,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <main className="max-w-9xl mx-auto p-5 md:p-8 pb-28 animate-fadeIn">
+    <main className="max-w-full mx-auto p-2 md:p-8 pb-28 animate-fadeIn">
       {renderContent()}
 
       {/* Desktop Navbar (Detached and Translucent) */}
@@ -157,11 +157,10 @@ export default function DashboardPage() {
         <div className="flex items-center space-x-5">
           <button
             onClick={() => setActiveTab("home")}
-            className={`flex flex-col items-center transition-colors duration-200 ${
-              activeTab === "home"
+            className={`flex flex-col items-center transition-colors duration-200 ${activeTab === "home"
                 ? "text-blue-600"
                 : "text-gray-600 hover:text-blue-500"
-            }`}
+              }`}
           >
             <Home size={24} />
             <span className="text-xs mt-1">Home</span>
@@ -169,11 +168,10 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setActiveTab("courses")}
-            className={`flex flex-col items-center transition-colors duration-200 ${
-              activeTab === "courses"
+            className={`flex flex-col items-center transition-colors duration-200 ${activeTab === "courses"
                 ? "text-blue-600"
                 : "text-gray-600 hover:text-blue-500"
-            }`}
+              }`}
           >
             <BookOpen size={24} />
             <span className="text-xs mt-1">Courses</span>
@@ -181,11 +179,10 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setActiveTab("quiz")}
-            className={`flex flex-col items-center transition-colors duration-200 ${
-              activeTab === "quiz"
+            className={`flex flex-col items-center transition-colors duration-200 ${activeTab === "quiz"
                 ? "text-blue-600"
                 : "text-gray-600 hover:text-blue-500"
-            }`}
+              }`}
           >
             <User size={24} />
             <span className="text-xs mt-1">Quiz</span>
@@ -198,11 +195,10 @@ export default function DashboardPage() {
         <div className="flex justify-between items-center gap-x-6 whitespace-nowrap">
           <button
             onClick={() => setActiveTab("home")}
-            className={`relative flex flex-col items-center p-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${
-              activeTab === "home"
+            className={`relative flex flex-col items-center p-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${activeTab === "home"
                 ? "text-blue-600 bg-white/30"
                 : "text-gray-600 hover:text-blue-500 hover:bg-white/20 active:bg-white/20"
-            }`}
+              }`}
           >
             <Home size={24} />
             <span className="text-xs mt-1">Home</span>
@@ -213,11 +209,10 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setActiveTab("courses")}
-            className={`relative flex flex-col items-center p-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${
-              activeTab === "courses"
+            className={`relative flex flex-col items-center p-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${activeTab === "courses"
                 ? "text-blue-600 bg-white/30"
                 : "text-gray-600 hover:text-blue-500 hover:bg-white/20 active:bg-white/20"
-            }`}
+              }`}
           >
             <BookOpen size={24} />
             <span className="text-xs mt-1">Courses</span>
@@ -228,11 +223,10 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setActiveTab("quiz")}
-            className={`relative flex flex-col items-center p-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${
-              activeTab === "quiz"
+            className={`relative flex flex-col items-center p-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${activeTab === "quiz"
                 ? "text-blue-600 bg-white/30"
                 : "text-gray-600 hover:text-blue-500 hover:bg-white/20 active:bg-white/20"
-            }`}
+              }`}
           >
             <User size={22} />
             <span className="text-xs mt-1">Quiz</span>
@@ -274,56 +268,66 @@ const QuizStarter = () => {
     return () => clearInterval(interval);
   }, [quizStartTime, countdown]);
 
-  const handleSubmit = async (code: string) => {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch(
-        "https://faas-blr1-8177d592.doserverless.co/api/v1/web/fn-1c23ee6f-939a-44b2-9c4e-d17970ddd644/abes/fetchQuizDetails",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            quiz_uc: code,
-            user_unique_code: admissionNumber,
-            pin: pin,
-          }),
-        }
-      );
+const handleSubmit = async (code: string) => {
+  setLoading(true);
+  setError("");
 
-      const data = await res.json();
-      const quizData = data?.response?.data;
-      if (!quizData) throw new Error("Quiz data not found");
-
-      const startTime = new Date(quizData.login_time);
-      const now = new Date();
-
-      if (startTime > now) {
-        const secondsLeft = Math.floor(
-          (startTime.getTime() - now.getTime()) / 1000
-        );
-        setCountdown(secondsLeft);
-        setQuizStartTime(startTime);
-        return; 
+  try {
+    const res = await fetch(
+      "https://faas-blr1-8177d592.doserverless.co/api/v1/web/fn-1c23ee6f-939a-44b2-9c4e-d17970ddd644/abes/fetchQuizDetails",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quiz_uc: code,
+          user_unique_code: admissionNumber,
+          pin: pin,
+        }),
       }
+    );
 
-      const today = new Date().toISOString().split("T")[0];
-      const studentId = admissionNumber;
-      const quizCode = code;
-      const finalId = quizData.cf_id;
+    const data = await res.json();
+    const quizData = data?.response?.data;
+    if (!quizData) throw new Error("Quiz data not found");
 
-      const reqIdPlain = `${today}_${studentId}_${quizCode}_${finalId}`;
-      const encodedReqId = btoa(reqIdPlain);
+    const now = new Date();
+    const quizStart = new Date(quizData.start_time);
+    const quizEnd = new Date(quizData.end_time);
 
-      const targetUrl = `https://abesquiz.netlify.app/#/start-quiz?req_id=${encodedReqId}`;
-      window.location.href = targetUrl;
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
+    if (now < quizStart) {
+      const secondsLeft = Math.floor((quizStart.getTime() - now.getTime()) / 1000);
+      setCountdown(secondsLeft);
+      setQuizStartTime(quizStart);
+      return;
     }
-  };
+
+    if (now >= quizEnd) {
+      setError("Quiz has already ended. You cannot attempt it now.");
+      return;
+    }
+
+    localStorage.setItem("admissionNumber", admissionNumber);
+    localStorage.setItem("studentPin", pin);
+    localStorage.setItem("quizCode", code);
+
+    const today = new Date().toISOString().split("T")[0];
+    const finalId = quizData.cf_id;
+
+    const reqIdPlain = `${today}_${admissionNumber}_${code}_${finalId}`;
+    const encodedReqId = btoa(reqIdPlain);
+
+    setTimeout(() => {
+      const targetUrl = `https://abesquiz.netlify.app/#/access-quiz?req_id=${encodedReqId}`;
+      window.location.href = targetUrl;
+    }, 300);
+  } catch (err: any) {
+    console.error(err);
+    setError(err.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="bg-white rounded-xl p-4 mt-6 shadow">
@@ -341,9 +345,8 @@ const QuizStarter = () => {
           }}
           maxLength={4}
           placeholder="Enter 4-character Quiz Code"
-          className={`w-full px-4 py-2 border rounded-md text-center ${
-            error ? "border-red-500" : "border-gray-300"
-          }`}
+          className={`w-full px-4 py-2 border rounded-md text-center ${error ? "border-red-500" : "border-gray-300"
+            }`}
         />
 
         {error && <p className="text-sm text-red-600 text-center">{error}</p>}

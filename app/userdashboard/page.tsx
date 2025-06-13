@@ -289,6 +289,13 @@ const handleSubmit = async (code: string) => {
     const data = await res.json();
     const quizData = data?.response?.data;
     if (!quizData) throw new Error("Quiz data not found");
+    if (
+      data?.msg === "Invalid Quiz ID" ||
+      !data?.response?.data ||
+      data.response.data.length === 0
+    ) {
+      throw new Error("Invalid Quiz Code. Please try again.");
+    }
 
     const now = new Date();
     const quizStart = new Date(quizData.start_time);

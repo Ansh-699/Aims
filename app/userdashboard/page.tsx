@@ -298,7 +298,7 @@ const handleSubmit = async (code: string) => {
     }
 
     const now = new Date();
-    const quizStart = new Date(quizData.start_time);
+    const quizStart = new Date(quizData.login_time);
     const quizEnd = new Date(quizData.end_time);
 
     if (now < quizStart) {

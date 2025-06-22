@@ -1,5 +1,13 @@
 import { NextResponse } from "next/server";
 
+// Simple in-memory cache for attendance data
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+type CacheEntry = {
+  data: any;
+  timestamp: number;
+};
+const attendanceCache = new Map<string, CacheEntry>();
+
 export async function POST(req: Request) {
   console.log("[attendance] start");
 
@@ -14,11 +22,32 @@ export async function POST(req: Request) {
     }
     console.log("[attendance] token:", token.slice(0, 10) + "...");
 
+    // Check cache first
+    const cacheKey = `attendance_${token.slice(0, 10)}`;
+    const cached = attendanceCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
+      console.log("[attendance] serving from cache");
+      return NextResponse.json(cached.data, {
+        status: 200,
+        headers: {
+          "Cache-Control": "max-age=300, stale-while-revalidate=1800",
+          "X-Cache": "HIT"
+        }
+      });
+    }
+
+    // Add timeout for external API call
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
     const url =
       "https://abes.platform.simplifii.com/api/v1/custom/getCFMappedWithStudentID?embed_attendance_summary=1";
     const extRes = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
     console.log("[attendance] external status:", extRes.status);
 
     if (!extRes.ok) {
@@ -55,23 +84,43 @@ export async function POST(req: Request) {
       totalSummary.attendance_summary;
     const { batch, section, dept: branch, student_id: studentId } = dailyRecords[0];
 
+    const responseData = {
+      dailyAttendance,
+      totalPresent,
+      totalClasses,
+      overallPercentage,
+      batch,
+      section,
+      branch,
+      studentId,
+    };
+
+    // Store in cache
+    attendanceCache.set(cacheKey, {
+      data: responseData,
+      timestamp: Date.now()
+    });
+
     console.log("[attendance] processed, sending response");
 
-    return NextResponse.json(
-      {
-        dailyAttendance,
-        totalPresent,
-        totalClasses,
-        overallPercentage,
-        batch,
-        section,
-        branch,
-        studentId,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json(responseData, {
+      status: 200,
+      headers: {
+        "Cache-Control": "max-age=300, stale-while-revalidate=1800",
+        "X-Cache": "MISS"
+      }
+    });
   } catch (err: any) {
     console.error("[attendance] unexpected error:", err);
+    
+    // Check if it's a timeout error and provide better error message
+    if (err.name === 'AbortError') {
+      return NextResponse.json(
+        { error: "Request timeout - please try again" },
+        { status: 408 }
+      );
+    }
+
     return NextResponse.json(
       { error: err.message || "Unknown server error" },
       { status: 500 }

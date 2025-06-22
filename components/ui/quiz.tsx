@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useCallback, memo } from "react";
+import React, { useEffect, useState, useMemo, useCallback, memo, useRef } from "react";
 import useSWR from "swr";
 import {
   Eye,
@@ -109,7 +109,7 @@ const fetcher = (url: string) => {
   );
 };
 
-export default function QuizList() {
+const QuizList = memo(function QuizList() {
   const [studentName, setStudentName] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentSubjectIndex, setCurrentSubjectIndex] = useState(0); // Add this new state
@@ -117,6 +117,20 @@ export default function QuizList() {
 
   // Add state for course mapping
   const [courseMap, setCourseMap] = useState<CourseMap>({});
+  const [isCourseMapLoading, setIsCourseMapLoading] = useState(true);
+  
+  // Add ref to track initialization
+  const isInitialized = useRef(false);
+
+  // Memoize the fallback data to prevent re-execution on every render
+  const quizFallbackData = useMemo(() => {
+    try {
+      const cached = sessionStorage.getItem("quiz_data");
+      return cached ? JSON.parse(cached) : undefined;
+    } catch (e) {
+      return undefined;
+    }
+  }, []);
 
   // Using SWR for data fetching with automatic caching and revalidation
   const { data, error, isLoading } = useSWR("/api/quiz", fetcher, {
@@ -127,28 +141,70 @@ export default function QuizList() {
       // Store the data in sessionStorage as a cache backup
       sessionStorage.setItem("quiz_data", JSON.stringify(data));
     },
-    fallbackData: (() => {
-      // Try to load from sessionStorage first
-      try {
-        const cached = sessionStorage.getItem("quiz_data");
-        return cached ? JSON.parse(cached) : undefined;
-      } catch (e) {
-        return undefined;
-      }
-    })(),
+    fallbackData: quizFallbackData,
   });
 
-  // Add a new SWR hook to fetch course mapping data
-  const { data: courseData } = useSWR("/api/all-attendance", fetcher, {
+  // Add a new SWR hook to fetch course mapping data with better error handling
+  const { data: courseData, error: courseError, isLoading: courseLoading } = useSWR("/api/all-attendance", fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     dedupingInterval: 600000, // 10 minutes
     onSuccess: (data) => {
       if (data?.courseCodeMap) {
         setCourseMap(data.courseCodeMap);
+        setIsCourseMapLoading(false);
+        // Cache the course map in sessionStorage
+        sessionStorage.setItem("course_map", JSON.stringify(data.courseCodeMap));
       }
+    },
+    onError: (error) => {
+      console.warn("Failed to load course mapping:", error);
+      setIsCourseMapLoading(false);
     }
   });
+
+  // Update course map when courseData changes
+  useEffect(() => {
+    if (courseData?.courseCodeMap) {
+      const newMap = courseData.courseCodeMap;
+      setCourseMap(prevMap => {
+        // Only update if the map has actually changed
+        if (JSON.stringify(prevMap) !== JSON.stringify(newMap)) {
+          setIsCourseMapLoading(false);
+          return newMap;
+        }
+        return prevMap;
+      });
+    } else if (courseData && !courseData.courseCodeMap) {
+      setIsCourseMapLoading(false);
+    }
+  }, [courseData]);
+
+  // Add timeout for course map loading
+  useEffect(() => {
+    // Prevent multiple initializations
+    if (isInitialized.current) return;
+    isInitialized.current = true;
+
+    // Try to load course map from sessionStorage on mount
+    try {
+      const cached = sessionStorage.getItem("course_map");
+      if (cached) {
+        const parsedMap = JSON.parse(cached);
+        setCourseMap(parsedMap);
+        setIsCourseMapLoading(false);
+        return; // Exit early if we found cached data
+      }
+    } catch (e) {
+      // Silently fail
+    }
+
+    const timeout = setTimeout(() => {
+      setIsCourseMapLoading(false);
+    }, 10000); // 10 seconds timeout
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   // Process the quiz data with useMemo for performance
   const quizzes = useMemo(() => {
@@ -300,35 +356,35 @@ export default function QuizList() {
   const filteredSubjectTopScores = useMemo(() => {
     if (!subjectTopScores.length) return [];
     
-    // Debug what we're filtering
-    console.log("Total subjects before filtering:", subjectTopScores.length);
+    // Separate main subjects from labs/workshops/training
+    const mainSubjects: any[] = [];
+    const labsWorkshops: any[] = [];
     
-    const filtered = subjectTopScores.filter(subject => {
+    subjectTopScores.forEach(subject => {
       const courseCode = subject.subject.toLowerCase();
       const courseName = (courseMap[subject.subject] || "").toLowerCase();
       
-      // Log what we're checking
-      console.log(`Checking ${subject.subject}: "${courseName}"`);
-      
-      // Simple filter approach - identical to CourseAttendance.tsx
-      // Return false (filter out) if course contains lab, workshop, or training
-      const isLabOrWorkshop = 
-        courseCode.includes("lab") || 
-        courseCode.includes("workshop") || 
-        courseCode.includes("training") || 
-        courseName.includes("lab") || 
-        courseName.includes("workshop") || 
-        courseName.includes("training");
-      
-      if (isLabOrWorkshop) {
-        console.log(`Filtering out: ${subject.subject} - ${courseName}`);
+      // Check if it's a lab, workshop, or training
+      if (courseCode.includes("lab") || 
+          courseCode.includes("workshop") || 
+          courseCode.includes("training") ||
+          courseName.includes("lab") || 
+          courseName.includes("workshop") || 
+          courseName.includes("training")) {
+        labsWorkshops.push(subject);
+      } else {
+        mainSubjects.push(subject);
       }
-      
-      return !isLabOrWorkshop;
     });
     
-    console.log("Remaining subjects after filtering:", filtered.length);
-    return filtered;
+    // Sort main subjects by best score (highest first)
+    mainSubjects.sort((a, b) => b.topQuizzes[0].marks_obtained - a.topQuizzes[0].marks_obtained);
+    
+    // Sort labs/workshops by best score (highest first)
+    labsWorkshops.sort((a, b) => b.topQuizzes[0].marks_obtained - a.topQuizzes[0].marks_obtained);
+    
+    // Return main subjects first, then labs/workshops
+    return [...mainSubjects, ...labsWorkshops];
   }, [subjectTopScores, courseMap]);
 
   // Add this effect to reset the subject index when filtering changes
@@ -429,7 +485,7 @@ export default function QuizList() {
                     quiz.correct + quiz.incorrect + quiz.not_attempted;
                   return (
                     <MemoizedQuizCard
-                      key={currentIndex}
+                      key={`${currentIndex}-${Object.keys(courseMap).length}`}
                       quiz={quiz}
                       accuracy={acc}
                       totalQuestions={totalQ}
@@ -473,7 +529,7 @@ export default function QuizList() {
                   {filteredSubjectTopScores.length > 0 && (
                     <>
                       <TopScoresCard
-                        key={filteredSubjectTopScores[currentSubjectIndex].subject}
+                        key={`${filteredSubjectTopScores[currentSubjectIndex].subject}-${Object.keys(courseMap).length}`}
                         subjectData={filteredSubjectTopScores[currentSubjectIndex]}
                         rank={currentSubjectIndex + 1}
                         currentIndex={currentSubjectIndex}
@@ -495,7 +551,9 @@ export default function QuizList() {
       </div>
     </div>
   );
-}
+});
+
+export default QuizList;
 
 // ---------- Subcomponents & Helpers ----------
 
@@ -660,11 +718,15 @@ const QuizCard = memo(function QuizCard({
   const scoreColorClass = useMemo(() => getScoreColor(quiz.marks_obtained), [quiz.marks_obtained]);
   const accuracyColorClass = useMemo(() => getAccuracyColor(accuracy), [accuracy]);
 
-  // Get subject name from course code
-  const subjectName = useMemo(() => 
-    courseMap[quiz.master_course_code] || quiz.master_course_code,
-    [quiz.master_course_code, courseMap]
-  );
+  // Get subject name from course code with fallback
+  const subjectName = useMemo(() => {
+    const mappedName = courseMap[quiz.master_course_code];
+    // If no mapping available or mapping is the same as course code, show course code
+    if (!mappedName || mappedName.trim() === '' || mappedName === quiz.master_course_code) {
+      return quiz.master_course_code;
+    }
+    return mappedName;
+  }, [quiz.master_course_code, courseMap]);
 
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 w-full relative">
@@ -890,8 +952,14 @@ const TopScoresCard = memo(function TopScoresCard({
 }) {
   const { subject, topQuizzes, quizCount, avgScore, overallAccuracy } = subjectData;
   
-  // Get subject name from course code
-  const subjectName = courseMap[subject] || subject;
+  // Get subject name from course code with better fallback handling
+  const subjectName = useMemo(() => {
+    const mappedName = courseMap[subject];
+    // Only show mapped name if it's different from the course code and actually exists
+    return mappedName && mappedName !== subject && mappedName.trim() !== '' 
+      ? mappedName 
+      : subject;
+  }, [subject, courseMap]);
   
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md hover:shadow-lg transition-all relative">

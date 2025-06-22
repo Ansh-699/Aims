@@ -40,6 +40,10 @@ interface QuizItem {
   quiz_link: string;
 }
 
+interface CourseMap {
+  [key: string]: string;
+}
+
 // Updated helper to parse pin that appears inside the fragment (#…?pin=…)
 function getPinFromQuizLink(htmlString: string): string | null {
   if (typeof window === "undefined") return null;
@@ -111,6 +115,9 @@ export default function QuizList() {
   const [currentSubjectIndex, setCurrentSubjectIndex] = useState(0); // Add this new state
   const [viewMode, setViewMode] = useState<"all" | "best">("all");
 
+  // Add state for course mapping
+  const [courseMap, setCourseMap] = useState<CourseMap>({});
+
   // Using SWR for data fetching with automatic caching and revalidation
   const { data, error, isLoading } = useSWR("/api/quiz", fetcher, {
     revalidateOnFocus: false,
@@ -129,6 +136,18 @@ export default function QuizList() {
         return undefined;
       }
     })(),
+  });
+
+  // Add a new SWR hook to fetch course mapping data
+  const { data: courseData } = useSWR("/api/all-attendance", fetcher, {
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+    dedupingInterval: 600000, // 10 minutes
+    onSuccess: (data) => {
+      if (data?.courseCodeMap) {
+        setCourseMap(data.courseCodeMap);
+      }
+    }
   });
 
   // Process the quiz data with useMemo for performance
@@ -277,6 +296,59 @@ export default function QuizList() {
     [totalCorrect, totalIncorrect, totalNot]
   );
 
+  // Filter out lab, workshop, and training subjects for best scores view
+  const filteredSubjectTopScores = useMemo(() => {
+    if (!subjectTopScores.length) return [];
+    
+    // Debug what we're filtering
+    console.log("Total subjects before filtering:", subjectTopScores.length);
+    
+    const filtered = subjectTopScores.filter(subject => {
+      const courseCode = subject.subject.toLowerCase();
+      const courseName = (courseMap[subject.subject] || "").toLowerCase();
+      
+      // Log what we're checking
+      console.log(`Checking ${subject.subject}: "${courseName}"`);
+      
+      // Simple filter approach - identical to CourseAttendance.tsx
+      // Return false (filter out) if course contains lab, workshop, or training
+      const isLabOrWorkshop = 
+        courseCode.includes("lab") || 
+        courseCode.includes("workshop") || 
+        courseCode.includes("training") || 
+        courseName.includes("lab") || 
+        courseName.includes("workshop") || 
+        courseName.includes("training");
+      
+      if (isLabOrWorkshop) {
+        console.log(`Filtering out: ${subject.subject} - ${courseName}`);
+      }
+      
+      return !isLabOrWorkshop;
+    });
+    
+    console.log("Remaining subjects after filtering:", filtered.length);
+    return filtered;
+  }, [subjectTopScores, courseMap]);
+
+  // Add this effect to reset the subject index when filtering changes
+  useEffect(() => {
+    // If current index is out of bounds after filtering, reset it
+    if (filteredSubjectTopScores.length > 0 && 
+        currentSubjectIndex >= filteredSubjectTopScores.length) {
+      setCurrentSubjectIndex(0);
+    }
+  }, [filteredSubjectTopScores.length, currentSubjectIndex]);
+
+  // Update the view mode handler to reset index when changing views
+  const handleViewModeChange = (mode: "all" | "best") => {
+    setViewMode(mode);
+    // Reset to first subject when switching to best view
+    if (mode === "best") {
+      setCurrentSubjectIndex(0);
+    }
+  };
+
   // Navigation handlers with useCallback to prevent unnecessary re-renders
   const handlePrevious = useCallback(() => setCurrentIndex((i) => Math.max(0, i - 1)), []);
   const handleNext = useCallback(() => setCurrentIndex((i) => Math.min(totalQuizzes - 1, i + 1)), [totalQuizzes]);
@@ -288,8 +360,8 @@ export default function QuizList() {
   );
   
   const handleNextSubject = useCallback(
-    () => setCurrentSubjectIndex((i) => Math.min(subjectTopScores.length - 1, i + 1)),
-    [subjectTopScores.length]
+    () => setCurrentSubjectIndex((i) => Math.min(filteredSubjectTopScores.length - 1, i + 1)),
+    [filteredSubjectTopScores.length]
   );
 
   if (isLoading) return <LoadingSkeleton />;
@@ -313,14 +385,14 @@ export default function QuizList() {
           <Button
             variant={viewMode === "all" ? "default" : "ghost"}
             className={`flex-1 rounded-none ${viewMode === "all" ? "bg-blue-600" : "hover:bg-gray-100"}`}
-            onClick={() => setViewMode("all")}
+            onClick={() => handleViewModeChange("all")}
           >
             <BookOpen className="h-4 w-4 mr-2" /> All Quizzes
           </Button>
           <Button
             variant={viewMode === "best" ? "default" : "ghost"}
             className={`flex-1 rounded-none ${viewMode === "best" ? "bg-blue-600" : "hover:bg-gray-100"}`}
-            onClick={() => setViewMode("best")}
+            onClick={() => handleViewModeChange("best")}
           >
             <Trophy className="h-4 w-4 mr-2" /> Best Scores
           </Button>
@@ -365,6 +437,7 @@ export default function QuizList() {
                       totalQuizzes={totalQuizzes}
                       onPrevious={handlePrevious}
                       onNext={handleNext}
+                      courseMap={courseMap} // Pass courseMap
                     />
                   );
                 })()}
@@ -397,19 +470,20 @@ export default function QuizList() {
               {/* Replace multiple cards with single scrollable card */}
               <div className="flex justify-center w-full">
                 <div className="w-full max-w-md">
-                  {subjectTopScores.length > 0 && (
+                  {filteredSubjectTopScores.length > 0 && (
                     <>
                       <TopScoresCard
-                        key={subjectTopScores[currentSubjectIndex].subject}
-                        subjectData={subjectTopScores[currentSubjectIndex]}
+                        key={filteredSubjectTopScores[currentSubjectIndex].subject}
+                        subjectData={filteredSubjectTopScores[currentSubjectIndex]}
                         rank={currentSubjectIndex + 1}
                         currentIndex={currentSubjectIndex}
-                        totalSubjects={subjectTopScores.length}
+                        totalSubjects={filteredSubjectTopScores.length}
                         onPrevious={handlePreviousSubject}
                         onNext={handleNextSubject}
+                        courseMap={courseMap} // Pass courseMap
                       />
                       <p className="text-center text-sm text-gray-600 mt-4">
-                        Showing subject {currentSubjectIndex + 1} of {subjectTopScores.length}
+                        Showing subject {currentSubjectIndex + 1} of {filteredSubjectTopScores.length}
                       </p>
                     </>
                   )}
@@ -554,6 +628,7 @@ const QuizCard = memo(function QuizCard({
   totalQuizzes,
   onPrevious,
   onNext,
+  courseMap
 }: {
   quiz: QuizItem;
   accuracy: number;
@@ -562,6 +637,7 @@ const QuizCard = memo(function QuizCard({
   totalQuizzes: number;
   onPrevious: () => void;
   onNext: () => void;
+  courseMap: CourseMap;
 }) {
   // Calculate link only once with useMemo
   const quizLinkHref = useMemo(() => {
@@ -583,6 +659,12 @@ const QuizCard = memo(function QuizCard({
   // Cache score and accuracy colors
   const scoreColorClass = useMemo(() => getScoreColor(quiz.marks_obtained), [quiz.marks_obtained]);
   const accuracyColorClass = useMemo(() => getAccuracyColor(accuracy), [accuracy]);
+
+  // Get subject name from course code
+  const subjectName = useMemo(() => 
+    courseMap[quiz.master_course_code] || quiz.master_course_code,
+    [quiz.master_course_code, courseMap]
+  );
 
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 w-full relative">
@@ -608,9 +690,14 @@ const QuizCard = memo(function QuizCard({
 
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base sm:text-lg font-semibold text-gray-800 truncate pr-2">
-            {quiz.master_course_code}
-          </CardTitle>
+          <div>
+            <CardTitle className="text-base sm:text-lg font-semibold text-gray-800">
+              {quiz.master_course_code}
+            </CardTitle>
+            <div className="text-xs text-gray-600 truncate pr-2 mt-1">
+              {subjectName}
+            </div>
+          </div>
           <Button
             variant="ghost"
             size="sm"
@@ -777,14 +864,15 @@ const SubjectScoreCard = memo(function SubjectScoreCard({
   );
 });
 
-// Updated TopScoresCard with navigation buttons
+// Updated TopScoresCard with correct total marks calculation
 const TopScoresCard = memo(function TopScoresCard({
   subjectData,
   rank,
   currentIndex,
   totalSubjects,
   onPrevious,
-  onNext
+  onNext,
+  courseMap
 }: {
   subjectData: {
     subject: string;
@@ -798,20 +886,24 @@ const TopScoresCard = memo(function TopScoresCard({
   totalSubjects: number;
   onPrevious: () => void;
   onNext: () => void;
+  courseMap: CourseMap;
 }) {
   const { subject, topQuizzes, quizCount, avgScore, overallAccuracy } = subjectData;
   
+  // Get subject name from course code
+  const subjectName = courseMap[subject] || subject;
+  
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md hover:shadow-lg transition-all relative">
-      {/* Add navigation buttons */}
+      {/* Improved navigation buttons */}
       <Button
         onClick={onPrevious}
         disabled={currentIndex === 0}
         variant="outline"
         size="icon"
-        className="absolute left-2 top-1/3 transform -translate-y-1/2 z-10 h-8 w-8 shadow-md"
+        className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 z-10 h-9 w-9 shadow-md hover:bg-gray-100"
       >
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronLeft className="h-5 w-5" />
       </Button>
 
       <Button
@@ -819,9 +911,9 @@ const TopScoresCard = memo(function TopScoresCard({
         disabled={currentIndex === totalSubjects - 1}
         variant="outline"
         size="icon"
-        className="absolute right-2 top-1/3 transform -translate-y-1/2 z-10 h-8 w-8 shadow-md"
+        className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 z-10 h-9 w-9 shadow-md hover:bg-gray-100"
       >
-        <ChevronRight className="h-4 w-4" />
+        <ChevronRight className="h-5 w-5" />
       </Button>
 
       <CardHeader className="pb-2">
@@ -833,9 +925,14 @@ const TopScoresCard = memo(function TopScoresCard({
                 rank === 3 ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800'}`}>
               <span className="text-sm font-bold">{rank}</span>
             </div>
-            <CardTitle className="text-base font-medium text-gray-800">
-              {subject}
-            </CardTitle>
+            <div>
+              <CardTitle className="text-base font-medium text-gray-800">
+                {subject}
+              </CardTitle>
+              <div className="text-xs text-gray-600">
+                {subjectName}
+              </div>
+            </div>
           </div>
           <Badge variant={rank <= 3 ? "default" : "outline"} className="text-xs">
             {quizCount} {quizCount === 1 ? 'quiz' : 'quizzes'}
@@ -847,14 +944,15 @@ const TopScoresCard = memo(function TopScoresCard({
         <div className="mb-3">
           <div className="flex justify-between items-center text-sm mb-2">
             <span className="font-medium text-indigo-700">Your Top Scores</span>
-            <span className="text-gray-500 text-xs">Out of 10</span>
+            <span className="text-gray-500 text-xs">Best Performance</span>
           </div>
           
           {/* List of top 5 scores */}
           <div className="space-y-2">
             {topQuizzes.map((quiz, idx) => {
               const totalQuestions = quiz.correct + quiz.incorrect + quiz.not_attempted;
-              const outOf = Math.max(10, totalQuestions); // Assuming max score is 100 if not provided
+              // Calculate actual out of value based on question weighting
+              const outOf = calculateTotalPossibleScore(quiz);
               
               return (
                 <div 
@@ -910,7 +1008,7 @@ const TopScoresCard = memo(function TopScoresCard({
             <BarChart3 className="h-4 w-4 text-purple-600" />
             <div>
               <p className="text-xs text-gray-600">Average Score</p>
-              <p className={`text-sm font-bold ${getScoreColor(avgScore)}`}>{avgScore}/100</p>
+              <p className={`text-sm font-bold ${getScoreColor(avgScore)}`}>{avgScore}</p>
             </div>
           </div>
           
@@ -926,6 +1024,22 @@ const TopScoresCard = memo(function TopScoresCard({
     </Card>
   );
 });
+
+// Helper function to calculate total possible score based on question data
+function calculateTotalPossibleScore(quiz: QuizItem): number {
+  const totalQuestions = quiz.correct + quiz.incorrect + quiz.not_attempted;
+  
+  // If no questions, return marks_obtained as fallback
+  if (totalQuestions === 0) return quiz.marks_obtained;
+  
+  // Calculate points per correct question
+  const pointsPerQuestion = quiz.correct > 0 
+    ? quiz.marks_obtained / quiz.correct 
+    : 1; // Default to 1 point if no correct answers
+  
+  // Calculate total possible score
+  return Math.round(totalQuestions * pointsPerQuestion);
+}
 
 // Helper function to get text color for accuracy (without background)
 function getAccuracyTextColor(acc: number): string {

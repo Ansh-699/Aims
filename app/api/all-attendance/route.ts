@@ -95,8 +95,17 @@ export async function GET(req: Request) {
       );
     }
 
+    // Create a mapping of course codes to course names
+    const courseCodeToNameMap: Record<string, string> = {};
+    entries.forEach(entry => {
+      if (entry.cdata && entry.cdata.course_code && entry.cdata.course_name) {
+        courseCodeToNameMap[entry.cdata.course_code] = entry.cdata.course_name.trim();
+      }
+    });
+
     const subjects = entries.map(e => ({
       name: e.cdata.course_name.trim(),
+      code: e.cdata.course_code,
       cfId: e.id
     }));
 
@@ -189,6 +198,7 @@ export async function GET(req: Request) {
       totalPresentAllSubjects: grandPresent,
       totalAbsentAllSubjects: grandAbsent,
       subjects: subjectsSummary,
+      courseCodeMap: courseCodeToNameMap, // Add the mapping to the response
       cachedAt: new Date().toISOString()
     };
 

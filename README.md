@@ -1,24 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dashboard Application
 
-## Getting Started
+A modern Next.js dashboard application with a clean, modular architecture focused on student attendance and quiz management.
 
-First, run the development server:
+## 🏗️ Project Architecture
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This project follows a **component-driven architecture** with clear separation of concerns:
+
+```
+├── app/
+│   ├── userdashboard/          # Main dashboard page
+│   ├── api/                    # API routes (attendance, quiz, login)
+│   └── types/                  # TypeScript type definitions
+├── components/
+│   ├── dashboard/              # Dashboard-specific components
+│   ├── layout/                 # Layout and wrapper components
+│   ├── navigation/             # Navigation components
+│   ├── quiz/                   # Quiz-related components
+│   └── ui/                     # Reusable UI components
+├── hooks/                      # Custom React hooks
+└── lib/                        # Utility functions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Student Dashboard** - Comprehensive attendance tracking and course management
+- **Interactive Quiz System** - Dynamic quiz loading and management
+- **Responsive Design** - Mobile-first approach with desktop optimization
+- **Performance Optimized** - Built with modern React patterns and Next.js optimizations
+- **Type Safety** - Full TypeScript support throughout the application
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- bun, yarn, pbun, or bun
+
+### Installation & Development
+
+```bash
+# Install dependencies
+bun install
+
+# Start development server
+bun run dev
+
+# Build for production
+bun run build
+
+# Start production server
+bun start
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+## 📁 Key Components
+
+### Dashboard (`/userdashboard`)
+- **Attendance Tracking** - View and manage student attendance records
+- **Course Overview** - Display course-specific information
+- **Quiz Management** - Interactive quiz system with real-time updates
+
+### API Routes
+- `/api/attendance` - Student attendance data
+- `/api/all-attendance` - Comprehensive attendance records
+- `/api/quiz` - Quiz data and management
+- `/api/login` - Authentication endpoints
+
+## 🧩 Architecture Highlights
+
+### Custom Hooks
+- `useAttendanceData` - Attendance data management with error handling
+- `useTabNavigation` - Tab state and navigation logic
+- `useStudentName` - Student information fetching and caching
+
+### Component Organization
+- **Modular Design** - Each component has a single, clear responsibility
+- **Reusable Components** - Shared UI components across the application
+- **Type Safety** - Comprehensive TypeScript interfaces and types
+
+## 📚 Documentation
+
+- [`REFACTORING_GUIDE.md`](./REFACTORING_GUIDE.md) - Detailed component structure and usage
+- [`COMPLETE_REFACTORING_SUMMARY.md`](./COMPLETE_REFACTORING_SUMMARY.md) - Full refactoring process and results
+- [`PERFORMANCE_OPTIMIZATIONS.md`](./PERFORMANCE_OPTIMIZATIONS.md) - Performance improvements and monitoring
+
+## 🔧 Development
+
+### Project Structure
+The application follows modern React/Next.js best practices:
+- **Component-driven architecture** for maintainability
+- **Custom hooks** for state management and business logic
+- **TypeScript** for type safety and better developer experience
+- **Performance optimizations** with memoization and efficient data fetching
+
+### Adding New Features
+1. Create components in the appropriate `components/` subdirectory
+2. Add custom hooks to `hooks/` for state management
+3. Update type definitions in `app/types/`
+4. Follow established patterns for consistency
+
+## 🚀 Deployment
+
+The application is optimized for deployment on Vercel, Netlify, or any Node.js hosting platform.
+
+```bash
+bun run build  # Creates optimized production build
+bun start      # Starts production server
+```
 
 ## Learn More
 

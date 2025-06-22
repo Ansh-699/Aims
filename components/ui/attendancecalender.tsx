@@ -15,6 +15,16 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// Add a module-level cache to store attendance data across component unmounts
+let attendanceCache: {
+  data: AttendanceData | null;
+  timestamp: number;
+  token: string;
+} | null = null;
+
+// Set cache expiration time (15 minutes)
+const CACHE_TTL = 900000;
+
 interface Props {
   attendanceData: AttendanceData;
 }
@@ -40,13 +50,12 @@ export interface AttendanceData {
 
 export default function AttendancePage({ }: Props) {
   const [loading, setLoading] = useState(true);
-  const [attendanceData, setAttendanceData] = useState<AttendanceData | null>(
-    null
-  );
+  const [attendanceData, setAttendanceData] = useState<AttendanceData | null>(null);
   const [error, setError] = useState("");
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
+  // Modified data fetching with cache implementation
   useEffect(() => {
     const fetchAttendance = async () => {
       const token = localStorage.getItem("token");
@@ -55,27 +64,135 @@ export default function AttendancePage({ }: Props) {
         setLoading(false);
         return;
       }
+
+      // Check for cached data
+      if (attendanceCache 
+          && attendanceCache.token === token 
+          && Date.now() - attendanceCache.timestamp < CACHE_TTL
+          && attendanceCache.data) {
+        console.log("Using cached attendance data");
+        setAttendanceData(attendanceCache.data);
+        setLoading(false);
+        return;
+      }
+
+      // Check session storage as fallback
+      const sessionData = sessionStorage.getItem('attendance_data');
+      const sessionTimestamp = sessionStorage.getItem('attendance_timestamp');
+      
+      if (sessionData && sessionTimestamp && 
+          Date.now() - parseInt(sessionTimestamp) < CACHE_TTL) {
+        try {
+          const parsedData = JSON.parse(sessionData);
+          console.log("Using session storage attendance data");
+          setAttendanceData(parsedData);
+          
+          // Update in-memory cache too
+          attendanceCache = {
+            data: parsedData,
+            timestamp: parseInt(sessionTimestamp),
+            token
+          };
+          
+          setLoading(false);
+          return;
+        } catch (e) {
+          console.error("Error parsing session data:", e);
+          // Continue to fetch fresh data if parsing fails
+        }
+      }
+
+      // Fetch fresh data if no valid cache exists
       try {
+        console.log("Fetching fresh attendance data");
         const response = await fetch("/api/all-attendance", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
+        
         if (!response.ok) {
           const t = await response.text();
           throw new Error(t || "Failed to fetch attendance data");
         }
+        
         const data = await response.json();
+        
+        // Update state
         setAttendanceData(data);
+        
+        // Update in-memory cache
+        attendanceCache = {
+          data,
+          timestamp: Date.now(),
+          token
+        };
+        
+        // Update session storage as fallback
+        sessionStorage.setItem('attendance_data', JSON.stringify(data));
+        sessionStorage.setItem('attendance_timestamp', Date.now().toString());
       } catch (err: any) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
+    
     fetchAttendance();
   }, []);
+
+  // Add cache force refresh function
+  const refreshData = async () => {
+    setLoading(true);
+    // Clear cache
+    attendanceCache = null;
+    sessionStorage.removeItem('attendance_data');
+    sessionStorage.removeItem('attendance_timestamp');
+    
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("No authentication token found");
+      setLoading(false);
+      return;
+    }
+    
+    try {
+      const response = await fetch("/api/all-attendance", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (!response.ok) {
+        const t = await response.text();
+        throw new Error(t || "Failed to fetch attendance data");
+      }
+      
+      const data = await response.json();
+      
+      // Update state
+      setAttendanceData(data);
+      
+      // Update cache
+      attendanceCache = {
+        data,
+        timestamp: Date.now(),
+        token
+      };
+      
+      // Update session storage
+      sessionStorage.setItem('attendance_data', JSON.stringify(data));
+      sessionStorage.setItem('attendance_timestamp', Date.now().toString());
+      
+      setError("");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getDailyAttendance = (): Map<
     string,
@@ -210,7 +327,6 @@ export default function AttendancePage({ }: Props) {
           </Card>
         </div>
 
-
         {/* Calendar Section */}
         <Card className="w-full p-1 md:p-2 mb-0 bg-white/70">
           <div className="flex justify-between items-center mb-0">
@@ -222,11 +338,24 @@ export default function AttendancePage({ }: Props) {
               <ChevronLeft className="h-4 w-4" />
               <span className="sr-only md:not-sr-only md:ml-2">Previous</span>
             </Button>
-            <div className="text-center">
+            <div className="text-center flex gap-2 items-center">
               <h2 className="text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-2">
                 <Calendar className="h-5 w-5 md:h-6 md:w-6 text-indigo-600" />
                 {formatMonth(currentMonth)}
               </h2>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={refreshData}
+                className="ml-2 p-1 text-xs text-indigo-600 hover:text-indigo-800"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                  <path d="M21 3v5h-5"></path>
+                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                  <path d="M3 21v-5h5"></path>
+                </svg>
+              </Button>
             </div>
             <Button
               variant="outline"

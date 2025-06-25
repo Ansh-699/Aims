@@ -8,12 +8,12 @@ export function useTheme() {
   useEffect(() => {
     // Check for saved theme preference or default to light
     const savedTheme = localStorage.getItem('theme') as Theme;
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
     if (savedTheme) {
       setTheme(savedTheme);
-    } else if (prefersDark) {
-      setTheme('dark');
+    } else {
+      // Always default to light mode regardless of system preference
+      setTheme('light');
     }
   }, []);
 

@@ -60,14 +60,14 @@ export default function CourseAttendance({
   const displayedCourses = showLabs ? labCourses : mainCourses;
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg border border-gray-200 mb-8">
-      <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg border border-gray-200 dark:border-gray-700 mb-8 hover:dark:border-gray-600">
+      <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 dark:from-gray-900 dark:to-gray-800 dark:border-gray-700">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 ">
-          <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+          <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 dark:text-white dark:text-white">
             <BarChart className="h-5 w-5 text-blue-600" />
             <span>Course-wise Attendance</span>
           </h3>
-          <span className="text-sm bg-white px-3 py-1 rounded-full shadow-sm border border-gray-200 text-gray-600">
+          <span className="text-sm bg-white dark:bg-gray-700 px-3 py-1 rounded-full shadow-sm border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400">
             Current Semester
           </span>
         </div>
@@ -99,23 +99,23 @@ export default function CourseAttendance({
       </div>
 
       {/* Desktop View */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className="hidden md:block overflow-x-auto dark:to-gray-800 dark:border-gray-700 dark:bg-gray-800">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-50">
-              <th className="py-3 px-6 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
+            <tr className="bg-gray-50 ">
+              <th className="py-3 px-6 text-left text-sm font-medium text-gray-600 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
                 Course
               </th>
-              <th className="py-3 px-6 text-center text-sm font-medium text-gray-600 uppercase tracking-wider">
+              <th className="py-3 px-6 text-center text-sm font-medium text-gray-600 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
                 Present
               </th>
-              <th className="py-3 px-6 text-center text-sm font-medium text-gray-600 uppercase tracking-wider">
+              <th className="py-3 px-6 text-center text-sm font-medium text-gray-600 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
                 Total
               </th>
-              <th className="py-3 px-6 text-center text-sm font-medium text-gray-600 uppercase tracking-wider">
+              <th className="py-3 px-6 text-center text-sm font-medium text-gray-600 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
                 Percentage
               </th>
-              <th className="py-3 px-6 text-center text-sm font-medium text-gray-600 uppercase tracking-wider">
+              <th className="py-3 px-6 text-center text-sm font-medium text-gray-600 uppercase tracking-wider dark:bg-gray-800 dark:text-white  ">
                 Status
               </th>
             </tr>
@@ -147,15 +147,16 @@ export default function CourseAttendance({
               return (
                 <tr
                   key={index}
-                  className="hover:bg-gray-50 transition-colors cursor-pointer group"
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer group"
                 >
                   <td className="py-4 px-6">
                     <div className="flex flex-col">
-                      <div className="font-medium text-gray-800 mb-1">
-                        {courseCode}
-                      </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="font-medium text-gray-800 dark:text-white mb-1">
                         {course.course}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 ">
+                       
+                        {courseCode}
                       </div>
                     </div>
                   </td>
@@ -172,7 +173,7 @@ export default function CourseAttendance({
                     </div>
                   </td>
                   <td className="py-4 px-6">
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
                       <div
                         className={`h-2.5 rounded-full ${bgColor}`}
                         style={{ width: course.percent }}
@@ -222,12 +223,12 @@ export default function CourseAttendance({
           return (
             <div
               key={index}
-              className="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200"
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200"
             >
-              <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 dark:bg-gray-800">
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-800 text-sm">{courseCode}</h4>
+                    <h4 className="font-semibold text-gray-800 dark:text-white text-sm">{courseCode}</h4>
                     <p className="text-xs text-gray-600 mt-1 line-clamp-2">{course.course}</p>
                   </div>
                   <span
@@ -256,7 +257,7 @@ export default function CourseAttendance({
                     <CheckCircle className="h-4 w-4 text-green-500" />
                     <span>Present</span>
                   </div>
-                  <span className="font-medium text-gray-800">
+                  <span className="font-medium text-gray-800 dark:text-white">
                     {course.present}
                   </span>
                 </div>
@@ -265,20 +266,20 @@ export default function CourseAttendance({
                     <BookOpen className="h-4 w-4 text-blue-500" />
                     <span>Total Classes</span>
                   </div>
-                  <span className="font-medium text-gray-800">
+                  <span className="font-medium text-gray-800 dark:text-white">
                     {course.total}
                   </span>
                 </div>
                 <div className="pt-2">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       Attendance Progress
                     </span>
-                    <span className="text-xs font-medium text-gray-700">
+                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
                       {course.percent}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                     <div
                       className={`h-2 rounded-full ${bgColor} transition-all duration-500 ease-out`}
                       style={{ width: course.percent }}

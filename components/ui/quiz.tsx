@@ -426,14 +426,14 @@ const QuizList = memo(function QuizList() {
     return <InfoMessage message="No quizzes available at the moment." />;
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 px-4 pt-6 pb-2 min-h-[calc(80vh-5rem)] ">
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4 pt-6 pb-2 min-h-[calc(80vh-5rem)] transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-1">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-1">
             Quiz Dashboard
           </h1>
-          <p className="text-gray-600">Student: {studentName}</p>
+          <p className="text-gray-600 dark:text-gray-400">Student: {studentName}</p>
         </div>
 
         {/* View Toggle Buttons */}
@@ -615,15 +615,15 @@ function LoadingSkeleton() {
 const MemoizedErrorMessage = memo(ErrorMessage);
 function ErrorMessage({ message }: { message: string }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6 flex items-center justify-center transition-colors duration-300">
       <div className="max-w-md w-full">
-        <Card className="border-red-200 bg-red-50 shadow-lg">
+        <Card className="border-red-200 dark:border-red-700/50 bg-red-50 dark:bg-red-900/30 shadow-lg">
           <CardContent className="p-6">
-            <div className="flex items-center space-x-3 text-red-700">
+            <div className="flex items-center space-x-3 text-red-700 dark:text-red-400">
               <XCircle className="h-6 w-6" />
               <span className="text-lg font-semibold">Error</span>
             </div>
-            <p className="text-red-600 mt-3 ml-9">{message}</p>
+            <p className="text-red-600 dark:text-red-300 mt-3 ml-9">{message}</p>
           </CardContent>
         </Card>
       </div>
@@ -634,15 +634,15 @@ function ErrorMessage({ message }: { message: string }) {
 const MemoizedInfoMessage = memo(InfoMessage);
 function InfoMessage({ message }: { message: string }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6 flex items-center justify-center transition-colors duration-300">
       <div className="max-w-md w-full">
-        <Card className="border-blue-200 bg-blue-50 shadow-lg">
+        <Card className="border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/30 shadow-lg">
           <CardContent className="p-6">
-            <div className="flex items-center space-x-3 text-blue-700">
+            <div className="flex items-center space-x-3 text-blue-700 dark:text-blue-400">
               <BookOpen className="h-6 w-6" />
               <span className="text-lg font-semibold">Information</span>
             </div>
-            <p className="text-blue-600 mt-3 ml-9">{message}</p>
+            <p className="text-blue-600 dark:text-blue-300 mt-3 ml-9">{message}</p>
           </CardContent>
         </Card>
       </div>
@@ -663,11 +663,11 @@ function SummaryCard({
   valueClass?: string;
 }) {
   return (
-    <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+    <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-0 shadow-lg transition-colors duration-300">
       <CardContent className="p-6 flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-600">{label}</p>
-          <p className={`text-3xl font-bold ${valueClass || "text-gray-800"}`}>
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{label}</p>
+          <p className={`text-3xl font-bold ${valueClass || "text-gray-800 dark:text-gray-200"}`}>
             {value}
           </p>
         </div>
@@ -729,13 +729,13 @@ const QuizCard = memo(function QuizCard({
   }, [quiz.master_course_code, courseMap]);
 
   return (
-    <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 w-full relative">
+    <Card className="bg-white/80 dark:bg-gray-800/90 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 w-full relative border border-gray-200 dark:border-gray-700">
       <Button
         onClick={onPrevious}
         disabled={currentIndex === 0}
         variant="outline"
         size="icon"
-        className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 h-8 w-8 shadow-md"
+        className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 h-8 w-8 shadow-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -745,7 +745,7 @@ const QuizCard = memo(function QuizCard({
         disabled={currentIndex === totalQuizzes - 1}
         variant="outline"
         size="icon"
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 h-8 w-8 shadow-md"
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 h-8 w-8 shadow-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>
@@ -753,30 +753,30 @@ const QuizCard = memo(function QuizCard({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-base sm:text-lg font-semibold text-gray-800">
+            <CardTitle className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200">
               {quiz.master_course_code}
             </CardTitle>
-            <div className="text-xs text-gray-600 truncate pr-2 mt-1">
+            <div className="text-xs text-gray-600 dark:text-gray-400 truncate pr-2 mt-1">
               {subjectName}
             </div>
           </div>
           <Button
             variant="ghost"
             size="sm"
-            className="shrink-0 text-blue-600 px-2"
+            className="shrink-0 text-blue-600 dark:text-blue-400 px-2 hover:bg-blue-50 dark:hover:bg-blue-900/30"
             onClick={() => window.open(quizLinkHref, "_blank")}
             disabled={quizLinkHref === "#"}
           >
             <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         </div>
-        <CardDescription className="flex items-center text-xs sm:text-sm text-gray-600 mt-1">
+        <CardDescription className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
           <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5" />
           {formattedDate}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-1 sm:space-y-4">
-        <div className="text-center p-0 sm:p-2 bg-gray-50 rounded-lg">
+        <div className="text-center p-0 sm:p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
           <div
             className={`text-2xl sm:text-3xl font-bold ${scoreColorClass} mb-1`}
           >
@@ -790,21 +790,21 @@ const QuizCard = memo(function QuizCard({
         </div>
         <div className="grid grid-cols-2 gap-2 sm:gap-3 p-3">
           <StatBox
-            icon={<CheckCircle className="h-4 w-4 text-green-600" />}
+            icon={<CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />}
             label="Correct"
             value={quiz.correct}
-            bg="bg-green-50"
-            text="text-green-700"
+            bg="bg-green-50 dark:bg-green-900/30"
+            text="text-green-700 dark:text-green-300"
           />
           <StatBox
-            icon={<XCircle className="h-4 w-4 text-red-600" />}
+            icon={<XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />}
             label="Incorrect"
             value={quiz.incorrect}
-            bg="bg-red-50"
-            text="text-red-700"
+            bg="bg-red-50 dark:bg-red-900/30"
+            text="text-red-700 dark:text-red-300"
           />
         </div>
-        <div className="text-center text-xs sm:text-sm text-gray-600 border-t pt-2 sm:pt-3">
+        <div className="text-center text-xs sm:text-sm text-gray-600 dark:text-gray-400 border-t dark:border-gray-600 pt-2 sm:pt-3">
           Total Questions:{" "}
           <span className="font-semibold">{totalQuestions}</span>
         </div>
@@ -875,7 +875,7 @@ const SubjectScoreCard = memo(function SubjectScoreCard({
   const accuracyColorClass = getAccuracyTextColor(bestQuizAccuracy);
   
   return (
-    <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md hover:shadow-lg transition-all">
+    <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md hover:shadow-lg transition-all ">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -962,7 +962,7 @@ const TopScoresCard = memo(function TopScoresCard({
   }, [subject, courseMap]);
   
   return (
-    <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md hover:shadow-lg transition-all relative">
+    <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md hover:shadow-lg transition-all relative dark:bg-gray-800 dark:text-white">
       {/* Improved navigation buttons */}
       <Button
         onClick={onPrevious}
@@ -1023,46 +1023,59 @@ const TopScoresCard = memo(function TopScoresCard({
               const outOf = calculateTotalPossibleScore(quiz);
               
               return (
-                <div 
-                  key={idx} 
-                  className={`flex items-center justify-between p-2 rounded-md ${
-                    idx === 0 ? 'bg-amber-50' : 'bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center 
-                      ${idx === 0 ? 'bg-amber-200 text-amber-800' : 
-                        idx === 1 ? 'bg-gray-200 text-gray-800' : 
-                        idx === 2 ? 'bg-orange-200 text-orange-800' : 'bg-blue-100 text-blue-800'}`}>
-                      <span className="text-xs font-bold">{idx + 1}</span>
-                    </div>
-                    <div>
-                      <span className={`font-semibold ${getScoreColor(quiz.marks_obtained)}`}>
-                        {quiz.marks_obtained}/{outOf}
-                      </span>
-                      <div className="text-xs text-gray-500">
-                        {formatDate(quiz.loggedin_at)}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-1">
-                    <div className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
-                      {quiz.correct} correct
-                    </div>
-                    <div className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">
-                      {quiz.incorrect} wrong
-                    </div>
-                  </div>
-                </div>
-              );
+  <div
+    key={idx}
+    className={`flex items-center justify-between p-2 rounded-md ${
+      idx === 0
+        ? 'bg-amber-50 dark:bg-gray-700 dark:text-white'
+        : 'bg-gray-50 dark:bg-gray-700 dark:text-gray-200'
+    }`}
+  >
+    <div className="flex items-center gap-2">
+      <div
+        className={`w-5 h-5 rounded-full flex items-center justify-center
+        ${
+          idx === 0
+            ? 'bg-amber-200 text-amber-800 dark:bg-amber-300 dark:text-amber-900'
+            : idx === 1
+            ? 'bg-gray-200 text-gray-800 dark:bg-gray-400 dark:text-gray-900'
+            : idx === 2
+            ? 'bg-orange-200 text-orange-800 dark:bg-orange-300 dark:text-orange-900'
+            : 'bg-blue-100 text-blue-800 dark:bg-blue-300 dark:text-blue-900'
+        }`}
+      >
+        <span className="text-xs font-bold">{idx + 1}</span>
+      </div>
+      <div>
+        <span
+          className={`font-semibold ${getScoreColor(quiz.marks_obtained)}`}
+        >
+          {quiz.marks_obtained}/{outOf}
+        </span>
+        <div className="text-xs text-gray-500 dark:text-gray-400">
+          {formatDate(quiz.loggedin_at)}
+        </div>
+      </div>
+    </div>
+
+    <div className="flex items-center gap-1">
+      <div className="text-xs bg-green-100 text-green-800 dark:bg-green-300 dark:text-green-900 px-2 py-0.5 rounded-full">
+        {quiz.correct} correct
+      </div>
+      <div className="text-xs bg-red-100 text-red-800 dark:bg-red-300 dark:text-red-900 px-2 py-0.5 rounded-full">
+        {quiz.incorrect} wrong
+      </div>
+    </div>
+  </div>
+);
+
             })}
             
             {/* Placeholder for missing scores */}
             {Array.from({ length: Math.max(0, 5 - topQuizzes.length) }).map((_, idx) => (
               <div 
                 key={`empty-${idx}`} 
-                className="flex items-center justify-center p-2 rounded-md bg-gray-50 border border-dashed border-gray-200 text-gray-400 text-sm"
+                className="flex items-center justify-center p-2 rounded-md bg-gray-50 border border-dashed border-gray-200 text-gray-400 text-sm dark:bg-gray-800 dark:text-white"
               >
                 No more quiz attempts
               </div>

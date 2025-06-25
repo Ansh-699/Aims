@@ -28,7 +28,7 @@ export function HomeTabContent({ attendance, studentName }: HomeTabContentProps)
     <>
       <DashboardHeader studentName={studentName} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 ">
         <StudentInfoCard
           branch={studentInfo.branch}
           batch={studentInfo.batch}
@@ -41,7 +41,7 @@ export function HomeTabContent({ attendance, studentName }: HomeTabContentProps)
         />
       </div>
       
-      <div className="bg-white rounded-xl p-2 sm:p-4 mt-4 sm:mt-6 shadow-sm">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-2 sm:p-4 mt-4 sm:mt-6 shadow-sm">
         <AttendanceCalendar attendanceData={processedAttendanceData} />
       </div>
     </>

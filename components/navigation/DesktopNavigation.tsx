@@ -14,8 +14,8 @@ function TabButton({ icon, label, isActive, onClick }: TabButtonProps) {
       onClick={onClick}
       className={`flex flex-col items-center transition-colors duration-200 ${
         isActive
-          ? "text-blue-600"
-          : "text-gray-600 hover:text-blue-500"
+          ? "text-blue-600 dark:text-blue-400"
+          : "text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
       }`}
     >
       {icon}
@@ -31,7 +31,7 @@ interface DesktopNavigationProps {
 
 export function DesktopNavigation({ activeTab, onTabChange }: DesktopNavigationProps) {
   return (
-    <div className="hidden md:flex fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white/80 backdrop-blur-lg border border-gray-200/60 rounded-2xl shadow-lg px-9 py-3">
+    <div className="hidden md:flex fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border border-gray-200/60 dark:border-gray-700/60 rounded-2xl shadow-lg px-9 py-3 transition-colors duration-300">
       <div className="flex items-center space-x-5">
         <TabButton
           icon={<Home size={24} />}

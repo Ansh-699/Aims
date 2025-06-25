@@ -7,19 +7,19 @@ interface ErrorStateProps {
 
 export default function ErrorState({ error }: ErrorStateProps) {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border-l-4 border-red-500 animate-fadeIn">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-md border-l-4 border-red-500 dark:border-red-400 animate-fadeIn border-r border-t border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-start">
-          <div className="bg-red-100 p-3 rounded-full mr-4">
-            <AlertTriangle className="h-6 w-6 text-red-600" />
+          <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded-full mr-4">
+            <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
               Something went wrong
             </h2>
-            <p className="text-gray-600 mb-6">{error}</p>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
             <button
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-600 dark:hover:to-indigo-600 transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
               onClick={() => window.location.reload()}
             >
               <svg

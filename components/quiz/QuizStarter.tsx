@@ -95,7 +95,7 @@ export function QuizStarter() {
   };
 
   return (
-    <div className="bg-white rounded-xl p-4 mt-6 shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 mt-6 shadow">
       <h2 className="text-lg font-semibold mb-0 text-gray-800">Start Quiz</h2>
       <div className="grid gap-4">
         <input

@@ -17,32 +17,32 @@ Successfully refactored a monolithic Next.js dashboard page (~300+ lines) into a
 - ✅ **TypeScript Compilation**: No errors
 - ✅ **Next.js Optimization**: All routes properly generated
 
-## 🗂️ New Project Architecture
+## 🗂️  Project Architecture
 
 ```
 ├── app/userdashboard/
-│   └── page.tsx                 # Main dashboard page (40 lines)
+│   └── page.tsx                   # Main dashboard page (40 lines)
 ├── components/
-│   ├── index.ts                 # Barrel exports for components
-│   ├── dashboard/               # Dashboard-specific components
-│   │   ├── DashboardContent.tsx # Main content router
-│   │   ├── DashboardHeader.tsx  # Header with student info
-│   │   ├── HomeTabContent.tsx   # Home tab content
-│   │   ├── CoursesTabContent.tsx# Courses tab content
-│   │   └── QuizTabContent.tsx   # Quiz tab content
-│   ├── layout/                  # Layout components
-│   │   ├── DashboardLayout.tsx  # Main layout wrapper
+│   ├── index.ts                   # Barrel exports for components
+│   ├── dashboard/                 # Dashboard-specific components
+│   │   ├── DashboardContent.tsx   # Main content router
+│   │   ├── DashboardHeader.tsx    # Header with student info
+│   │   ├── HomeTabContent.tsx     # Home tab content
+│   │   ├── CoursesTabContent.tsx  # Courses tab content
+│   │   └── QuizTabContent.tsx     # Quiz tab content
+│   ├── layout/                    # Layout components
+│   │   ├── DashboardLayout.tsx    # Main layout wrapper
 │   │   └── EmptyAttendanceState.tsx # Empty state component
-│   ├── navigation/              # Navigation components
-│   │   ├── DesktopNavigation.tsx# Desktop nav
-│   │   └── MobileNavigation.tsx # Mobile nav
-│   └── quiz/                    # Quiz-specific components
-│       └── QuizStarter.tsx      # Quiz starter component
-└── hooks/                       # Custom React hooks
-    ├── index.ts                 # Hooks barrel exports
-    ├── useAttendanceData.ts     # Attendance data management
-    ├── useTabNavigation.ts      # Tab state management
-    └── useStudentName.ts        # Student name fetching
+│   ├── navigation/                # Navigation components
+│   │   ├── DesktopNavigation.tsx  # Desktop nav
+│   │   └── MobileNavigation.tsx   # Mobile nav
+│   └── quiz/                      # Quiz-specific components
+│       └── QuizStarter.tsx        # Quiz starter component
+└── hooks/                         # Custom React hooks
+    ├── index.ts                   # Hooks barrel exports
+    ├── useAttendanceData.ts       # Attendance data management
+    ├── useTabNavigation.ts        # Tab state management
+    └── useStudentName.ts          # Student name fetching
 ```
 
 ## 🔧 Implementation Details
@@ -164,8 +164,8 @@ To add a new tab, simply:
 
 ## ✅ Verification Checklist
 
-- [x] **Production Build** - `npm run build` passes successfully
-- [x] **Development Server** - `npm run dev` starts without errors
+- [x] **Production Build** - `bun run build` passes successfully
+- [x] **Development Server** - `bun run dev` starts without errors
 - [x] **TypeScript Compilation** - No TS errors
 - [x] **Import Resolution** - All imports resolve correctly
 - [x] **Component Structure** - Logical organization maintained

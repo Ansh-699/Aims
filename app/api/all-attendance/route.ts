@@ -38,7 +38,7 @@ async function getAllAttendanceHandler(req: Request) {
 
   try {
     const origin = process.env.NODE_ENV === "production"
-      ? "https://attendance-jkkwj.ondigitalocean.app"
+      ? "https://www.attendanceaims.live/"
       : "http://localhost:3000";
 
     // Get studentId using the attendance API

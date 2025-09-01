@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import ConditionalWrapper from "./components/ConditionalWrapper";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -21,11 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} font-sans antialiased`}>
-        <div style={{ backgroundColor: "#EAF1FF" }}>
-          <div className="md:max-w-6xl lg:max-w-6xl mx-auto">
-            {children}
-          </div>
-        </div>
+        <ConditionalWrapper>
+          {children}
+        </ConditionalWrapper>
       </body>
     </html>
   );

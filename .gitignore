@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/rust-backend/target
+/rust-backend/Cargo.lock
+/rust-backend/.env

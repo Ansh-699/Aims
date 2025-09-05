@@ -1,12 +1,8 @@
 import { NextResponse } from "next/server";
 
-// Simple in-memory cache for attendance data
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-type CacheEntry = {
-  data: any;
-  timestamp: number;
-};
-const attendanceCache = new Map<string, CacheEntry>();
+// Disable any Next.js caching for this route
+export const dynamic = "force-dynamic"; // always run on demand
+export const revalidate = 0; // no ISR
 
 export async function POST(req: Request) {
   console.log("[attendance] start");
@@ -22,19 +18,7 @@ export async function POST(req: Request) {
     }
     console.log("[attendance] token:", token.slice(0, 10) + "...");
 
-    // Check cache first
-    const cacheKey = `attendance_${token.slice(0, 10)}`;
-    const cached = attendanceCache.get(cacheKey);
-    if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
-      console.log("[attendance] serving from cache");
-      return NextResponse.json(cached.data, {
-        status: 200,
-        headers: {
-          "Cache-Control": "max-age=300, stale-while-revalidate=1800",
-          "X-Cache": "HIT"
-        }
-      });
-    }
+  // Removed in-memory caching (always fetch fresh data)
 
     // Add timeout for external API call
     const controller = new AbortController();
@@ -45,6 +29,7 @@ export async function POST(req: Request) {
     const extRes = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
       signal: controller.signal,
+      cache: 'no-store'
     });
 
     clearTimeout(timeoutId);
@@ -95,21 +80,9 @@ export async function POST(req: Request) {
       studentId,
     };
 
-    // Store in cache
-    attendanceCache.set(cacheKey, {
-      data: responseData,
-      timestamp: Date.now()
-    });
-
     console.log("[attendance] processed, sending response");
 
-    return NextResponse.json(responseData, {
-      status: 200,
-      headers: {
-        "Cache-Control": "max-age=300, stale-while-revalidate=1800",
-        "X-Cache": "MISS"
-      }
-    });
+  return NextResponse.json(responseData, { status: 200 });
   } catch (err: any) {
     console.error("[attendance] unexpected error:", err);
     

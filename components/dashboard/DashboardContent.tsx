@@ -13,7 +13,7 @@ interface DashboardContentProps {
 export function DashboardContent({ activeTab, attendance, studentName }: DashboardContentProps) {
   switch (activeTab) {
     case "home":
-      return <HomeTabContent attendance={attendance} studentName={studentName} />;
+  return <HomeTabContent attendance={attendance} studentName={studentName} />;
     
     case "courses":
       return <CoursesTabContent attendance={attendance} />;
@@ -22,6 +22,6 @@ export function DashboardContent({ activeTab, attendance, studentName }: Dashboa
       return <QuizTabContent />;
     
     default:
-      return <HomeTabContent attendance={attendance} studentName={studentName} />;
+  return <HomeTabContent attendance={attendance} studentName={studentName} />;
   }
 }

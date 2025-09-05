@@ -28,14 +28,35 @@ const SignIn = () => {
       });
 
       const loginData = await loginRes.json();
-      if (!loginRes.ok || !loginData.token) {
-        setMessage(loginData.msg || loginData.error || "Login failed");
+
+      // Try to normalize token from multiple possible fields
+      const extractedToken = loginData.token || loginData.access_token || loginData.authToken || loginData?.response?.token || loginData?.response?.access_token;
+
+      if (!loginRes.ok || !extractedToken) {
+        console.warn('[login] raw response:', loginData);
+        setMessage(loginData.msg || loginData.error || 'Login failed (no token)');
         setLoading(false);
         setIsSubmitting(false);
         return;
       }
 
-      localStorage.setItem("token", loginData.token);
+      // Clear stale storage manually
+      try {
+  const localKeys = ['token','studentName','admissionNumber','studentPin','quizCode','course_map','studentId','batch','section','branch','lastStudentId','lastAuthToken'];
+        const sessionKeys = ['attendance_data','attendance_timestamp','quiz_data'];
+        localKeys.forEach(k => localStorage.removeItem(k));
+        sessionKeys.forEach(k => sessionStorage.removeItem(k));
+        // Broadcast clear events for components listening
+        window.dispatchEvent(new Event('clear-attendance-cache'));
+        window.dispatchEvent(new Event('clear-quiz-cache'));
+      } catch {}
+
+      // Persist new token + admission number (username field acts as admission)
+      try {
+  localStorage.setItem('token', extractedToken);
+  localStorage.setItem('lastAuthToken', extractedToken);
+        localStorage.setItem('admissionNumber', username);
+      } catch {}
       window.location.href = "/userdashboard";
     } catch (error) {
       setMessage("An error occurred. Please try again.");

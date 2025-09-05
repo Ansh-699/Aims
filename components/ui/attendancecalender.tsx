@@ -15,32 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Enhanced cache management with cleanup and size limits
-const MAX_CACHE_SIZE = 10;
-const CACHE_TTL = 900000; // 15 minutes
-
-const attendanceCache = new Map<string, {
-  data: AttendanceData | null;
-  timestamp: number;
-}>();
-
-// Add cache cleanup function
-function cleanupCache() {
-  const now = Date.now();
-  for (const [key, entry] of attendanceCache.entries()) {
-    if (now - entry.timestamp > CACHE_TTL) {
-      attendanceCache.delete(key);
-    }
-  }
-  
-  // Limit cache size
-  if (attendanceCache.size > MAX_CACHE_SIZE) {
-    const entries = Array.from(attendanceCache.entries());
-    entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
-    const toDelete = entries.slice(0, attendanceCache.size - MAX_CACHE_SIZE);
-    toDelete.forEach(([key]) => attendanceCache.delete(key));
-  }
-}
+// Removed in-memory caching to avoid stale cross-user data
 
 interface Props {
   attendanceData: AttendanceData;
@@ -72,7 +47,7 @@ export default function AttendancePage({ }: Props) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
-  // Modified data fetching with cache implementation
+  // Data fetching (no in-memory cache to prevent stale data for new logins)
   useEffect(() => {
     const fetchAttendance = async () => {
       const token = localStorage.getItem("token");
@@ -81,47 +56,6 @@ export default function AttendancePage({ }: Props) {
         setLoading(false);
         return;
       }
-
-      const cacheKey = token.slice(0, 10);
-      
-      // Clean up old cache entries first
-      cleanupCache();
-      
-      // Check for cached data
-      const cached = attendanceCache.get(cacheKey);
-      if (cached && Date.now() - cached.timestamp < CACHE_TTL && cached.data) {
-        console.log("Using cached attendance data");
-        setAttendanceData(cached.data);
-        setLoading(false);
-        return;
-      }
-
-      // Check session storage as fallback
-      const sessionData = sessionStorage.getItem('attendance_data');
-      const sessionTimestamp = sessionStorage.getItem('attendance_timestamp');
-      
-      if (sessionData && sessionTimestamp && 
-          Date.now() - parseInt(sessionTimestamp) < CACHE_TTL) {
-        try {
-          const parsedData = JSON.parse(sessionData);
-          console.log("Using session storage attendance data");
-          setAttendanceData(parsedData);
-          
-          // Update in-memory cache too
-          attendanceCache.set(cacheKey, {
-            data: parsedData,
-            timestamp: parseInt(sessionTimestamp)
-          });
-          
-          setLoading(false);
-          return;
-        } catch (e) {
-          console.error("Error parsing session data:", e);
-          // Continue to fetch fresh data if parsing fails
-        }
-      }
-
-      // Fetch fresh data if no valid cache exists
       try {
         console.log("Fetching fresh attendance data");
         const response = await fetch("/api/all-attendance", {
@@ -129,6 +63,7 @@ export default function AttendancePage({ }: Props) {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          cache: 'no-store'
         });
         
         if (!response.ok) {
@@ -141,15 +76,6 @@ export default function AttendancePage({ }: Props) {
         // Update state
         setAttendanceData(data);
         
-        // Update in-memory cache
-        attendanceCache.set(cacheKey, {
-          data,
-          timestamp: Date.now()
-        });
-        
-        // Update session storage as fallback
-        sessionStorage.setItem('attendance_data', JSON.stringify(data));
-        sessionStorage.setItem('attendance_timestamp', Date.now().toString());
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -158,15 +84,20 @@ export default function AttendancePage({ }: Props) {
     };
     
     fetchAttendance();
+    
+    // On logout clear state listener
+    const clearHandler = () => {
+      setAttendanceData(null);
+      setSelectedDay(null);
+      setCurrentMonth(new Date());
+    };
+    window.addEventListener('clear-attendance-cache', clearHandler);
+    return () => window.removeEventListener('clear-attendance-cache', clearHandler);
   }, []);
 
   // Add cache force refresh function
   const refreshData = async () => {
     setLoading(true);
-    // Clear cache
-    attendanceCache.clear();
-    sessionStorage.removeItem('attendance_data');
-    sessionStorage.removeItem('attendance_timestamp');
     
     const token = localStorage.getItem("token");
     if (!token) {
@@ -181,6 +112,7 @@ export default function AttendancePage({ }: Props) {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        cache: 'no-store'
       });
       
       if (!response.ok) {
@@ -192,18 +124,6 @@ export default function AttendancePage({ }: Props) {
       
       // Update state
       setAttendanceData(data);
-      
-      const cacheKey = token.slice(0, 10);
-      
-      // Update cache
-      attendanceCache.set(cacheKey, {
-        data,
-        timestamp: Date.now()
-      });
-      
-      // Update session storage
-      sessionStorage.setItem('attendance_data', JSON.stringify(data));
-      sessionStorage.setItem('attendance_timestamp', Date.now().toString());
       
       setError("");
     } catch (err: any) {

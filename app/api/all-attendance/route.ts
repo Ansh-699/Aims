@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
 import { withPerformanceLogging } from "@/app/utils/performance";
 
-// Simple in-memory API cache
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-type CacheEntry = {
-  data: any;
-  timestamp: number;
-};
-const apiCache = new Map<string, CacheEntry>();
+// Force dynamic execution; remove all caching
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 async function getAllAttendanceHandler(req: Request) {
   console.log("[all-attendance] start (GET)");
@@ -22,19 +18,6 @@ async function getAllAttendanceHandler(req: Request) {
     );
   }
 
-  // Check cache using token as key
-  const cacheKey = `attendance_${token.slice(0, 10)}`;
-  const cached = apiCache.get(cacheKey);
-  if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
-    console.log("[all-attendance] serving from cache");
-    return NextResponse.json(cached.data, {
-      status: 200,
-      headers: {
-        "Cache-Control": "max-age=300, stale-while-revalidate=1800",
-        "X-Cache": "HIT"
-      }
-    });
-  }
 
   try {
     const origin = process.env.NODE_ENV === "production"
@@ -42,18 +25,15 @@ async function getAllAttendanceHandler(req: Request) {
       : "http://localhost:3000";
 
     // Get studentId using the attendance API
-    const attendanceRes = await fetch(
-      `${origin}/api/attendance`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ token }),
-        cache: 'no-store'
-      }
-    );
+    const attendanceRes = await fetch(`${origin}/api/attendance`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({ token }),
+      cache: 'no-store'
+    });
 
     if (!attendanceRes.ok) {
       const errText = await attendanceRes.text();
@@ -69,13 +49,10 @@ async function getAllAttendanceHandler(req: Request) {
     console.log("[all-attendance] studentId:", studentId);
 
     // Get subject list
-    const subsRes = await fetch(
-      "https://abes.platform.simplifii.com/api/v1/custom/getCFMappedWithStudentID",
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: 'no-store'
-      }
-    );
+    const subsRes = await fetch("https://abes.platform.simplifii.com/api/v1/custom/getCFMappedWithStudentID", {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store'
+    });
 
     if (!subsRes.ok) {
       const t = await subsRes.text();
@@ -125,10 +102,7 @@ async function getAllAttendanceHandler(req: Request) {
           url.searchParams.set("equalto___cf_id", String(sub.cfId));
           url.searchParams.set("token", token);
 
-          const r = await fetch(url.toString(), {
-            signal: controller.signal,
-            cache: 'no-store'
-          });
+          const r = await fetch(url.toString(), { signal: controller.signal, cache: 'no-store' });
           clearTimeout(timeoutId);
 
           if (!r.ok) {
@@ -262,23 +236,8 @@ async function getAllAttendanceHandler(req: Request) {
       } : undefined
     };
 
-    // Update cache
-    apiCache.set(cacheKey, {
-      data: responseData,
-      timestamp: Date.now()
-    });
-
-    // Return with caching headers
-    return NextResponse.json(
-      responseData,
-      {
-        status: 200,
-        headers: {
-          "Cache-Control": "max-age=300, stale-while-revalidate=1800",
-          "X-Cache": "MISS"
-        }
-      }
-    );
+  // Return without cache headers
+  return NextResponse.json(responseData, { status: 200 });
   } catch (err: any) {
     console.error("[all-attendance] unexpected error:", err);
     return NextResponse.json(

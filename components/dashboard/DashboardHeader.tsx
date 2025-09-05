@@ -1,10 +1,11 @@
-import React from 'react';
+import React from "react";
 
-interface DashboardHeaderProps {
-  studentName: string;
-}
+interface HeaderProps { studentName: any; loading?: boolean; }
 
-export function DashboardHeader({ studentName }: DashboardHeaderProps) {
+export function DashboardHeader({ studentName, loading = false }: HeaderProps) {
+  const nameStr = typeof studentName === 'string' ? studentName : (studentName != null ? String(studentName) : '');
+  const initial = nameStr ? nameStr.charAt(0).toUpperCase() : 'U';
+
   return (
     <div className="flex flex-col md:flex-row items-start justify-between py-1 mb-6">
       <div>
@@ -18,13 +19,13 @@ export function DashboardHeader({ studentName }: DashboardHeaderProps) {
       <div className="flex items-center bg-white dark:bg-gray-800 shadow-md rounded-xl px-3 sm:px-4 py-2 border border-gray-200 dark:border-gray-700 mt-4 md:mt-0 transition-colors duration-300">
         <div className="mr-2 sm:mr-3 bg-gradient-to-br from-blue-500 to-purple-600 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center">
           <span className="text-white font-bold text-xs sm:text-sm">
-            {studentName.charAt(0).toUpperCase() || "U"}
+            {loading ? "…" : initial}
           </span>
         </div>
         <div>
           <div className="text-xs sm:text-sm text-gray-500 dark:text-white">Student</div>
           <div className="font-semibold text-gray-800 dark:text-gray-200 text-sm sm:text-base">
-            {studentName}
+            {loading ? "Loading..." : (nameStr || "Unknown")}
           </div>
         </div>
       </div>

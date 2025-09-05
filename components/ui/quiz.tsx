@@ -315,14 +315,24 @@ const QuizList = memo(function QuizList() {
     if (quizzes.length > 0) {
       const first = quizzes[0];
       setStudentName(first.student_name);
-
-      localStorage.setItem("studentName", first.student_name);
-      localStorage.setItem("admissionNumber", first.admission_number);
-
-      const pinValue = getPinFromQuizLink(first.quiz_link) || "";
-      localStorage.setItem("studentPin", pinValue);
+      try {
+        localStorage.setItem("studentName", first.student_name);
+        window.dispatchEvent(new Event('student-name-updated'));
+        localStorage.setItem("admissionNumber", first.admission_number);
+        const pinValue = getPinFromQuizLink(first.quiz_link) || "";
+        localStorage.setItem("studentPin", pinValue);
+      } catch {}
     }
   }, [quizzes]);
+
+  // React to logout events to clear state promptly
+  React.useEffect(() => {
+    const handler = () => {
+      setStudentName("");
+    };
+    window.addEventListener('clear-quiz-cache', handler);
+    return () => window.removeEventListener('clear-quiz-cache', handler);
+  }, []);
 
   // Pre-calculate stats with useMemo for better performance
   const totalQuizzes = quizzes.length;

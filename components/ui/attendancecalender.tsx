@@ -40,9 +40,9 @@ export interface AttendanceData {
   subjects: Record<string, SubjectSummary>;
 }
 
-export default function AttendancePage({ }: Props) {
+export default function AttendanceCalendar({ attendanceData: initialData }: Props) {
   const [loading, setLoading] = useState(true);
-  const [attendanceData, setAttendanceData] = useState<AttendanceData | null>(null);
+  const [fetchedAttendance, setFetchedAttendance] = useState<AttendanceData | null>(null);
   const [error, setError] = useState("");
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
@@ -71,10 +71,8 @@ export default function AttendancePage({ }: Props) {
           throw new Error(t || "Failed to fetch attendance data");
         }
         
-        const data = await response.json();
-        
-        // Update state
-        setAttendanceData(data);
+  const data = await response.json();
+  setFetchedAttendance(data);
         
       } catch (err: any) {
         setError(err.message);
@@ -87,7 +85,7 @@ export default function AttendancePage({ }: Props) {
     
     // On logout clear state listener
     const clearHandler = () => {
-      setAttendanceData(null);
+  setFetchedAttendance(null);
       setSelectedDay(null);
       setCurrentMonth(new Date());
     };
@@ -120,10 +118,8 @@ export default function AttendancePage({ }: Props) {
         throw new Error(t || "Failed to fetch attendance data");
       }
       
-      const data = await response.json();
-      
-      // Update state
-      setAttendanceData(data);
+  const data = await response.json();
+  setFetchedAttendance(data);
       
       setError("");
     } catch (err: any) {
@@ -138,9 +134,9 @@ export default function AttendancePage({ }: Props) {
     { present: number; absent: number }
   > => {
     const dailyMap = new Map<string, { present: number; absent: number }>();
-    if (!attendanceData?.subjects) return dailyMap;
+  if (!fetchedAttendance?.subjects) return dailyMap;
 
-    Object.values(attendanceData.subjects).forEach((subject) => {
+  Object.values(fetchedAttendance.subjects).forEach((subject) => {
       subject.daily.forEach((day) => {
         if (!dailyMap.has(day.date)) {
           dailyMap.set(day.date, { present: 0, absent: 0 });
@@ -196,9 +192,8 @@ export default function AttendancePage({ }: Props) {
   };
 
   const getTotalSubjects = () => {
-    return attendanceData?.subjects
-      ? Object.keys(attendanceData.subjects).length
-      : 0;
+    const src = fetchedAttendance?.subjects || initialData?.subjects;
+    return src ? Object.keys(src).length : 0;
   };
 
   const getSelectedDayData = () => {
@@ -221,7 +216,10 @@ export default function AttendancePage({ }: Props) {
 
   if (loading) return <LoadingState />;
   if (error) return <ErrorState error={error} />;
-  if (!attendanceData) return null;
+  // Determine which totals to display (prefer prop to ensure consistency with header summary)
+  const displayPresent = initialData?.totalPresentAllSubjects ?? fetchedAttendance?.totalPresentAllSubjects ?? 0;
+  const displayAbsent = initialData?.totalAbsentAllSubjects ?? fetchedAttendance?.totalAbsentAllSubjects ?? 0;
+  if (!initialData && !fetchedAttendance) return null;
 
   const selectedDayData = getSelectedDayData();
 
@@ -239,7 +237,7 @@ export default function AttendancePage({ }: Props) {
                   Present Lecture
                 </p>
                 <p className="text-xl font-bold text-blue-700 dark:text-blue-300">
-                  {attendanceData.totalPresentAllSubjects}
+                  {displayPresent}
                 </p>
               </div>
               <div className="p-2 bg-blue-100 dark:bg-blue-800/50 rounded-full">
@@ -256,7 +254,7 @@ export default function AttendancePage({ }: Props) {
                   Absent Lecture
                 </p>
                 <p className="text-xl font-bold text-red-700 dark:text-red-300">
-                  {attendanceData.totalAbsentAllSubjects}
+                  {displayAbsent}
                 </p>
               </div>
               <div className="p-2 bg-red-100 dark:bg-red-800/50 rounded-full">

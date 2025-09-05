@@ -15,14 +15,24 @@ export async function GET(req: Request) {
   const token = authHeader.split(" ")[1];
 
   try {
-  const quizData = await makeQuizRequest(token);
+    const quizData = await makeQuizRequest(token);
+
+    // Extract and console log student_name, admission_number, and pin from the first record
+    // if (quizData.response && quizData.response.data && quizData.response.data.length > 0) {
+    //   const firstRecord = quizData.response.data[0];
+    //   console.log("Student Name:", firstRecord.student_name);
+    //   console.log("Admission Number:", firstRecord.admission_number);
+    //   console.log("PIN:", firstRecord.quiz_link.match(/pin=([^&]+)/)?.[1] || "Not found");
+    // } else {
+    //   console.log("No quiz data available to extract fields");
+    // }
 
     return new Response(JSON.stringify(quizData), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-    "Cache-Control": "no-store",
-    "X-Cache": "BYPASS"
+        "Cache-Control": "no-store",
+        "X-Cache": "BYPASS"
       },
     });
 

@@ -26,7 +26,7 @@ export function HomeTabContent({ attendance, studentName }: HomeTabContentProps)
 
   return (
     <>
-  <DashboardHeader studentName={studentName} />
+  <DashboardHeader {...({ studentName } as any)} />
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 ">
         <StudentInfoCard

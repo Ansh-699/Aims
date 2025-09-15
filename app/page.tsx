@@ -80,7 +80,7 @@ const SignIn = () => {
 
         <div className="mt-14 mb-8">
           <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-gray-400 to-gray-500 dark:from-gray-300 dark:to-gray-400 bg-clip-text text-transparent">
-            Welcome Back
+            Welcome Back u
           </h2>
           <p className="text-center text-gray-300 dark:text-gray-400 mt-2">Sign in to your account</p>
         </div>

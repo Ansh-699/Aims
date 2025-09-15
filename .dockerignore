@@ -1,0 +1,35 @@
+# Node/Bun dependency folders
+node_modules
+.bun
+.pnpm-store
+npm-debug.log
+yarn.lock
+
+# Next.js build outputs
+.next
+out
+
+# Logs
+logs
+*.log
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+
+# Git files
+.git
+.gitignore
+
+# Docker-related
+Dockerfile
+docker-compose.yml
+
+# Env files (keep local only!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

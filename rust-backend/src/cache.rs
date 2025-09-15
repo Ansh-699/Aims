@@ -106,10 +106,10 @@ impl Cache {
         // Check if request is already pending
         {
             let pending = self.pending_requests.read().await;
-            if let Some(sender) = pending.get(&key) {
+            if let Some(_sender) = pending.get(&key) {
                 info!("[Cache] Waiting for pending request: {}", key);
                 // Create a new channel for this request
-                let (tx, rx) = tokio::sync::oneshot::channel();
+                let (_tx, rx) = tokio::sync::oneshot::channel();
                 drop(pending);
                 
                 // Wait for the result
@@ -134,12 +134,12 @@ impl Cache {
         }
     }
 
-    pub async fn clear_expired(&self) {
+    pub async fn _clear_expired(&self) {
         // Moka cache automatically handles expiration
         info!("[Cache] Cache cleanup completed");
     }
 
-    pub async fn get_stats(&self) -> HashMap<String, u64> {
+    pub async fn _get_stats(&self) -> HashMap<String, u64> {
         let mut stats = HashMap::new();
         stats.insert("attendance_cache_size".to_string(), self.attendance_cache.entry_count());
         stats.insert("quiz_cache_size".to_string(), self.quiz_cache.entry_count());

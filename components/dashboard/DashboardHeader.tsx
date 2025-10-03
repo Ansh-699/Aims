@@ -15,55 +15,58 @@ export function DashboardHeader({ loading = false }: HeaderProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchStudentInfo() {
+    function loadStudentInfo() {
       setIsLoading(true);
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        setError('No authentication token found');
+      
+      // Try to get cached data first
+      const cachedName = localStorage.getItem('studentName');
+      const cachedAdmission = localStorage.getItem('admissionNumber');
+      const cachedPin = localStorage.getItem('pin');
+      
+      if (cachedName && cachedAdmission) {
+        setStudentInfo({
+          student_name: cachedName,
+          admission_number: cachedAdmission,
+          pin: cachedPin || 'Not found'
+        });
         setIsLoading(false);
         return;
       }
 
-      try {
-        const response = await axios.get('/api/quiz', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        const quizData = response.data;
-
-        if (quizData.response && quizData.response.data && quizData.response.data.length > 0) {
-          const firstRecord = quizData.response.data[0];
-          const info = {
-            student_name: firstRecord.student_name,
-            admission_number: firstRecord.admission_number,
-            pin: firstRecord.quiz_link.match(/pin=([^&]+)/)?.[1] || 'Not found',
-          };
-          setStudentInfo(info);
+      // If no cached data, wait for it to be populated by other components
+      const checkForData = () => {
+        const name = localStorage.getItem('studentName');
+        const admission = localStorage.getItem('admissionNumber');
+        const pin = localStorage.getItem('pin');
+        
+        if (name && admission) {
+          setStudentInfo({
+            student_name: name,
+            admission_number: admission,
+            pin: pin || 'Not found'
+          });
+          setIsLoading(false);
         } else {
-          setError('No quiz data available');
+          // Check again in 500ms
+          setTimeout(checkForData, 500);
         }
-      } catch (error: unknown) {
-        let message = 'Failed to fetch student info';
-        if (axios.isAxiosError(error)) {
-          message = error.response?.data?.error || error.message || message;
-        } else if (error instanceof Error) {
-          message = error.message;
-        } else if (typeof error === 'string') {
-          message = error;
-        } else {
-          message = String(error);
-        }
-        setError(message);
-      } finally {
-        setIsLoading(false);
-      }
+      };
+      
+      checkForData();
     }
 
-    fetchStudentInfo();
+    loadStudentInfo();
+
+    // Listen for student name updates
+    const handleStudentUpdate = () => {
+      loadStudentInfo();
+    };
+
+    window.addEventListener('student-name-updated', handleStudentUpdate);
+    
+    return () => {
+      window.removeEventListener('student-name-updated', handleStudentUpdate);
+    };
   }, []);
 
   const nameStr = studentInfo?.student_name || '';

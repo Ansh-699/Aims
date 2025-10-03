@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import LoadingState from "../../app/userdashboard/skeletonloading";
 import ErrorState from "../../app/userdashboard/ErrorState";
+import { ProgressiveLoader, CalendarSkeleton } from "./progressive-loader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -60,7 +61,7 @@ export interface AttendanceData {
 }
 
 export default function AttendanceCalendar({ attendanceData: initialData }: Props) {
-  const { attendanceData: cachedData, isLoading, error: contextError, fetchAttendance } = useAttendance();
+  const { attendanceData: cachedData, isLoading, error: contextError, fetchAttendance, isStale } = useAttendance();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [selectedPeriodDetail, setSelectedPeriodDetail] = useState<{
@@ -85,7 +86,7 @@ export default function AttendanceCalendar({ attendanceData: initialData }: Prop
     };
     window.addEventListener('clear-attendance-cache', clearHandler);
     return () => window.removeEventListener('clear-attendance-cache', clearHandler);
-  }, [attendanceData, fetchAttendance]);
+  }, [fetchAttendance]);
 
   // Force refresh function using context
   const refreshData = async () => {
@@ -200,12 +201,12 @@ export default function AttendanceCalendar({ attendanceData: initialData }: Prop
     }
   };
 
-  // Show loading until we have the right data structure from context
-  if (loading || !attendanceData || !attendanceData.subjects) {
-    return <LoadingState />;
+  // Show progressive loading states
+  if (loading && !attendanceData) {
+    return <CalendarSkeleton />;
   }
 
-  if (error) return <ErrorState error={error} />;
+  if (error && !attendanceData) return <ErrorState error={error} />;
 
   // Use cached attendance data
   const displayPresent = attendanceData?.totalPresentAllSubjects ?? 0;
@@ -216,11 +217,16 @@ export default function AttendanceCalendar({ attendanceData: initialData }: Prop
 
 
   return (
-    <div className={cn(
-      "w-full bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-100 dark:bg-gradient-to-br dark:from-blue-900 dark:via-blue-800 dark:to-indigo-900",
-      selectedDay ? "min-h-screen py-0" : "min-h-fit py-2"
-    )}>
-      <div className="w-full px-2 md:px-4 py-2">
+    <ProgressiveLoader 
+      isLoading={loading} 
+      isStale={isStale}
+      message="Fetching latest attendance data..."
+    >
+      <div className={cn(
+        "w-full bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-100 dark:bg-gradient-to-br dark:from-blue-900 dark:via-blue-800 dark:to-indigo-900",
+        selectedDay ? "min-h-screen py-0" : "min-h-fit py-2"
+      )}>
+        <div className="w-full px-2 md:px-4 py-2">
         {/* Header - Stats Cards */}
         <div className="w-full grid grid-cols-2 gap-3 mb-4 pb-3">
           {/* Present Lecture Card */}
@@ -278,7 +284,15 @@ export default function AttendanceCalendar({ attendanceData: initialData }: Prop
                 variant="ghost"
                 size="sm"
                 onClick={refreshData}
-                className="ml-2 p-1 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
+                disabled={loading}
+                className={cn(
+                  "ml-2 p-1 text-xs transition-all duration-200",
+                  isStale 
+                    ? "text-yellow-600 dark:text-yellow-400 hover:text-yellow-800 dark:hover:text-yellow-300" 
+                    : "text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300",
+                  loading && "animate-spin"
+                )}
+                title={isStale ? "Data is stale - click to refresh" : "Refresh data"}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
@@ -287,6 +301,11 @@ export default function AttendanceCalendar({ attendanceData: initialData }: Prop
                   <path d="M3 21v-5h5"></path>
                 </svg>
               </Button>
+              {isStale && (
+                <Badge variant="outline" className="ml-2 text-xs text-yellow-600 dark:text-yellow-400 border-yellow-300 dark:border-yellow-600">
+                  Updating...
+                </Badge>
+              )}
             </div>
             <Button
               variant="outline"
@@ -722,7 +741,8 @@ export default function AttendanceCalendar({ attendanceData: initialData }: Prop
             </Card>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </ProgressiveLoader>
   );
 }

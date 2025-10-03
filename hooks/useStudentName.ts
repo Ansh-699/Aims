@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { usePathname } from 'next/navigation'; // For Next.js App Router
+import { usePathname } from 'next/navigation';
 
 // Key to track which user's name is cached
 const LAST_ID_KEY = 'lastStudentId';
@@ -13,61 +12,21 @@ export function useStudentName(fallback: string | number | undefined = '') {
   const attemptedFetchRef = useRef(false);
   const pathname = usePathname(); // Get current route
 
-  const fetchStudentInfo = async (token: string | null) => {
-    if (!token) {
-      setStudentName('');
-      setAdmissionNumber('');
-      setPin('');
-      localStorage.removeItem('studentName');
-      localStorage.removeItem('admissionNumber');
-      localStorage.removeItem(LAST_ID_KEY);
-      attemptedFetchRef.current = false;
-      return;
-    }
-
-    try {
-      const response = await axios.get('/api/quiz', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const quizData = response.data;
-
-      if (quizData.response && quizData.response.data && quizData.response.data.length > 0) {
-        const firstRecord = quizData.response.data[0];
-        const newName = String(firstRecord.student_name).trim();
-        const newAdmissionNumber = String(firstRecord.admission_number).trim();
-        const newPin = firstRecord.quiz_link.match(/pin=([^&]+)/)?.[1] || 'Not found';
-
-        setStudentName(newName);
-        setAdmissionNumber(newAdmissionNumber);
-        setPin(newPin);
-
-        try {
-          localStorage.setItem('studentName', newName);
-          localStorage.setItem('admissionNumber', newAdmissionNumber);
-          localStorage.setItem('pin', newPin);
-          if (fallback !== undefined && fallback !== null) {
-            localStorage.setItem(LAST_ID_KEY, String(fallback));
-          }
-          localStorage.setItem('lastAuthToken', token);
-        } catch (error) {
-          console.error('Failed to save to localStorage:', error);
-        }
-      } else {
-        setStudentName('');
-        setAdmissionNumber('');
-        setPin('');
-      }
-    } catch (error) {
-      console.error('Failed to fetch student info:', error);
-      setStudentName('');
-      setAdmissionNumber('');
-      setPin('');
-    } finally {
+  const loadStudentInfo = () => {
+    const cachedName = localStorage.getItem('studentName');
+    const cachedAdmission = localStorage.getItem('admissionNumber');
+    const cachedPin = localStorage.getItem('pin');
+    
+    if (cachedName) {
+      setStudentName(cachedName);
+      setAdmissionNumber(cachedAdmission || '');
+      setPin(cachedPin || '');
       attemptedFetchRef.current = true;
+    } else if (fallback && typeof fallback === 'string' && !/^\d+$/.test(fallback)) {
+      // If fallback is a string name (not a number), use it
+      setStudentName(fallback);
+      setAdmissionNumber('');
+      setPin('');
     }
   };
 
@@ -111,23 +70,19 @@ export function useStudentName(fallback: string | number | undefined = '') {
       setPin('');
     }
 
-    // Fetch data if no valid name or on root route
-    if ((!studentName || pathname === '/') && !attemptedFetchRef.current) {
-      fetchStudentInfo(currentToken);
-    }
+    // Load student info from cache
+    loadStudentInfo();
 
-    // Listen for auth changes
-    const handleAuthChange = () => {
-      const newToken = localStorage.getItem('token');
-      attemptedFetchRef.current = false; // Allow refetch on auth change
-      fetchStudentInfo(newToken);
+    // Listen for student name updates from other components
+    const handleStudentUpdate = () => {
+      loadStudentInfo();
     };
 
-    window.addEventListener('authChange', handleAuthChange);
+    window.addEventListener('student-name-updated', handleStudentUpdate);
 
     // Cleanup
     return () => {
-      window.removeEventListener('authChange', handleAuthChange);
+      window.removeEventListener('student-name-updated', handleStudentUpdate);
     };
   }, [studentName, pathname, fallback]); // Depend on pathname and fallback
 

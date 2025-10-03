@@ -2,6 +2,7 @@
 import React, { useCallback } from 'react';
 import { LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { clearQuizCache } from '@/hooks/useQuizData';
 
 export function LogoutButton() {
   const router = useRouter();
@@ -12,6 +13,10 @@ export function LogoutButton() {
     const sessionKeys = ['attendance_data','attendance_timestamp','quiz_data'];
     localKeys.forEach(k => localStorage.removeItem(k));
     sessionKeys.forEach(k => sessionStorage.removeItem(k));
+    
+    // Clear the global quiz cache
+    clearQuizCache();
+    
     window.dispatchEvent(new Event('clear-attendance-cache'));
     window.dispatchEvent(new Event('clear-quiz-cache'));
   } catch {}

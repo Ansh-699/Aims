@@ -20,7 +20,7 @@ export class PerformanceMonitor {
     const startTime = Date.now();
     this.metrics.set(key, {
       startTime,
-      memoryUsage: process.memoryUsage?.(),
+      memoryUsage: typeof process !== 'undefined' ? process.memoryUsage?.() : undefined,
       customMetrics
     });
   }
@@ -40,7 +40,7 @@ export class PerformanceMonitor {
       ...metric,
       endTime,
       duration: endTime - metric.startTime,
-      memoryUsage: process.memoryUsage?.()
+      memoryUsage: typeof process !== 'undefined' ? process.memoryUsage?.() : undefined
     };
     
     this.metrics.set(key, updatedMetric);
@@ -164,12 +164,12 @@ export async function timeFunction<T>(
 export function withPerformanceLogging(handler: Function, routeName: string) {
   return async function(this: any, ...args: any[]) {
     const start = Date.now();
-    const memBefore = process.memoryUsage?.();
+    const memBefore = typeof process !== 'undefined' ? process.memoryUsage?.() : undefined;
     
     try {
       const result = await handler.apply(this, args);
       const duration = Date.now() - start;
-      const memAfter = process.memoryUsage?.();
+      const memAfter = typeof process !== 'undefined' ? process.memoryUsage?.() : undefined;
       
       console.log(`[API Performance] ${routeName}:`, {
         duration: `${duration}ms`,

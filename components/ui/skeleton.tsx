@@ -1,14 +1,15 @@
-import React from "react";
+import { cn } from "@/lib/utils"
 
-interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-const Skeleton = ({ className, ...props }: SkeletonProps) => {
+function Skeleton({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={["animate-pulse rounded-md bg-muted dark:bg-gray-800", className].join(" ")}
+      className={cn("animate-pulse rounded-md bg-muted", className)}
       {...props}
     />
-  );
-};
+  )
+}
 
-export { Skeleton };
+export { Skeleton }

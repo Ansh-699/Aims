@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo, useCallback, memo, useRef } from "react";
 import useSWR from "swr";
+import { useQuizData } from "@/hooks/useQuizData";
 import {
   Eye,
   Calendar,
@@ -94,8 +95,8 @@ const fetchWithRetry = async (
   }
 };
 
-// Custom fetcher for SWR
-const fetcher = (url: string) => {
+// Custom fetcher for attendance data
+const attendanceFetcher = (url: string) => {
   const token = localStorage.getItem("token");
   if (!token) {
     throw new Error("No token found. Please log in.");
@@ -105,7 +106,7 @@ const fetcher = (url: string) => {
     url,
     { headers: { Authorization: `Bearer ${token}` } },
     3,
-    8000 // Increased timeout for initial load
+    8000
   );
 };
 
@@ -132,20 +133,11 @@ const QuizList = memo(function QuizList() {
     }
   }, []);
 
-  // Using SWR for data fetching with automatic caching and revalidation
-  const { data, error, isLoading } = useSWR("/api/quiz", fetcher, {
-    revalidateOnFocus: false,
-    revalidateIfStale: false,
-    dedupingInterval: 300000, // 5 minutes
-    onSuccess: (data) => {
-      // Store the data in sessionStorage as a cache backup
-      sessionStorage.setItem("quiz_data", JSON.stringify(data));
-    },
-    fallbackData: quizFallbackData,
-  });
+  // Using optimized quiz data hook to prevent multiple API calls
+  const { data, error, isLoading } = useQuizData();
 
   // Add a new SWR hook to fetch course mapping data with better error handling
-  const { data: courseData, error: courseError, isLoading: courseLoading } = useSWR("/api/all-attendance", fetcher, {
+  const { data: courseData, error: courseError, isLoading: courseLoading } = useSWR("/api/all-attendance", attendanceFetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     dedupingInterval: 600000, // 10 minutes

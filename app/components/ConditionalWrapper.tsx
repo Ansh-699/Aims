@@ -1,8 +1,15 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { AttendanceProvider } from "@/contexts/AttendanceContext";
+import { useServiceWorker } from "@/hooks/useServiceWorker";
+import { PerformanceMonitor } from "@/components/ui/performance-monitor";
+
+function ServiceWorkerManager() {
+  useServiceWorker();
+  return null;
+}
 
 export default function ConditionalWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? "/";
@@ -14,9 +21,11 @@ export default function ConditionalWrapper({ children }: { children: React.React
 
   return (
     <AttendanceProvider>
+      <ServiceWorkerManager />
       <div className={className} style={style}>
         {children}
       </div>
+      <PerformanceMonitor />
     </AttendanceProvider>
   );
 }

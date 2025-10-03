@@ -43,3 +43,5 @@ next-env.d.ts
 /rust-backend/target
 /rust-backend/Cargo.lock
 /rust-backend/.env
+.vercel
+.vscode

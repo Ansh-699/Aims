@@ -4,6 +4,7 @@ import { withPerformanceLogging } from "@/app/utils/performance";
 // Force dynamic execution; remove all caching
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+export const runtime = 'edge';
 
 async function getAllAttendanceHandler(req: Request) {
   console.log("[all-attendance] start (GET)");

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 // Disable any Next.js caching for this route
 export const dynamic = "force-dynamic"; // always run on demand
 export const revalidate = 0; // no ISR
+export const runtime = 'edge';
 
 export async function POST(req: Request) {
   console.log("[attendance] start");

@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 export async function POST(req: Request) {
   const { username, password } = await req.json();
   const form = new URLSearchParams({ username, password });

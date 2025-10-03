@@ -1,6 +1,7 @@
 // Disable caching to ensure fresh quiz data per user/token
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const runtime = 'edge';
 
 export async function GET(req: Request) {
   const authHeader = req.headers.get("Authorization");

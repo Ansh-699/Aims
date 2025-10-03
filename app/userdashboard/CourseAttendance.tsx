@@ -3,6 +3,7 @@ import useSWR from "swr";
 import { BarChart, CheckCircle, BookOpen, AlertCircle } from "lucide-react";
 import { getStatusColor } from "../utils/statusHelpers";
 import { CourseAttendance as CourseAttendanceType } from "../types";
+import CourseDetailModal from "@/components/ui/course-detail-modal";
 
 interface CourseAttendanceProps {
   dailyAttendance: CourseAttendanceType[];
@@ -22,6 +23,8 @@ export default function CourseAttendance({
   dailyAttendance,
 }: CourseAttendanceProps) {
   const [showLabs, setShowLabs] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch course code to name mapping
   const { data: courseData } = useSWR("/api/all-attendance", fetcher, {
@@ -58,6 +61,32 @@ export default function CourseAttendance({
   }, [dailyAttendance]);
 
   const displayedCourses = showLabs ? labCourses : mainCourses;
+
+  // Function to handle course click and transform data for modal
+  const handleCourseClick = (course: CourseAttendanceType, courseCode: string) => {
+    // Get detailed data from courseData if available
+    const detailedSubjectData = courseData?.subjects?.[course.course];
+    
+    // Transform the course data to match the modal's expected format
+    const transformedCourse = {
+      name: course.course,
+      code: courseCode,
+      totalPresent: detailedSubjectData?.totalPresent || course.present,
+      totalAbsent: detailedSubjectData?.totalAbsent || (course.total - course.present),
+      totalLeave: detailedSubjectData?.totalLeave || 0,
+      percentage: course.percent,
+      daily: detailedSubjectData?.daily || []
+    };
+    
+    console.log('Opening course detail for:', course.course, transformedCourse);
+    setSelectedCourse(transformedCourse);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedCourse(null);
+  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg border border-gray-200 dark:border-gray-700 mb-8 hover:dark:border-gray-600">
@@ -148,15 +177,18 @@ export default function CourseAttendance({
                 <tr
                   key={index}
                   className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer group"
+                  onClick={() => handleCourseClick(course, courseCode)}
                 >
                   <td className="py-4 px-6">
                     <div className="flex flex-col">
-                      <div className="font-medium text-gray-800 dark:text-white mb-1">
+                      <div className="font-medium text-gray-800 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {course.course}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400 ">
-                       
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
                         {courseCode}
+                      </div>
+                      <div className="text-xs text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                        Click for detailed view
                       </div>
                     </div>
                   </td>
@@ -223,13 +255,15 @@ export default function CourseAttendance({
           return (
             <div
               key={index}
-              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200"
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+              onClick={() => handleCourseClick(course, courseCode)}
             >
               <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 dark:bg-gray-800">
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex-1">
                     <h4 className="font-semibold text-gray-800 dark:text-white text-sm">{courseCode}</h4>
                     <p className="text-xs text-gray-600 mt-1 line-clamp-2">{course.course}</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">Tap for details</p>
                   </div>
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bgColor} text-black bg-opacity-15 ml-2`}
@@ -294,6 +328,15 @@ export default function CourseAttendance({
       {/* <div className="px-0 py-1 border-t border-gray-200">
                     <QuizList />
                   </div> */}
+      
+      {/* Course Detail Modal */}
+      {selectedCourse && (
+        <CourseDetailModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          courseData={selectedCourse}
+        />
+      )}
     </div>
   );
 }

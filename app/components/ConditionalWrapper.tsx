@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import React from "react";
+import { AttendanceProvider } from "@/contexts/AttendanceContext";
 
 export default function ConditionalWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? "/";
@@ -12,8 +13,10 @@ export default function ConditionalWrapper({ children }: { children: React.React
   const style = isRoot ? undefined : { backgroundColor: "#ECF3FF" } as React.CSSProperties;
 
   return (
-    <div className={className} style={style}>
-      {children}
-    </div>
+    <AttendanceProvider>
+      <div className={className} style={style}>
+        {children}
+      </div>
+    </AttendanceProvider>
   );
 }

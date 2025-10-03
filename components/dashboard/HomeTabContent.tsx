@@ -18,6 +18,8 @@ export function HomeTabContent({ attendance, studentName }: HomeTabContentProps)
     subjects: attendance.subjects || {},
   };
 
+
+
   const studentInfo = {
     branch: attendance.branch,
     batch: attendance.batch,
@@ -26,8 +28,8 @@ export function HomeTabContent({ attendance, studentName }: HomeTabContentProps)
 
   return (
     <>
-  <DashboardHeader {...({ studentName } as any)} />
-      
+      <DashboardHeader {...({ studentName } as any)} />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 ">
         <StudentInfoCard
           branch={studentInfo.branch}
@@ -40,7 +42,7 @@ export function HomeTabContent({ attendance, studentName }: HomeTabContentProps)
           overallPercentage={attendance.overallPercentage}
         />
       </div>
-      
+
       <div className="bg-white dark:bg-gray-800 rounded-xl p-2 sm:p-4 mt-4 sm:mt-6 shadow-sm">
         <AttendanceCalendar attendanceData={processedAttendanceData} />
       </div>

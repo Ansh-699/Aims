@@ -9,6 +9,7 @@ interface AttendanceData {
   totalLeaveAllSubjects?: number;
   subjects: Record<string, any>;
   cachedAt?: string;
+  fromCache?: boolean;
 }
 
 interface AttendanceContextType {
@@ -142,7 +143,7 @@ export function AttendanceProvider({ children }: AttendanceProviderProps) {
   const [error, setError] = useState<string | null>(null);
   const [isStale, setIsStale] = useState(false);
   const cache = useRef(AttendanceCache.getInstance());
-  const backgroundFetchRef = useRef<NodeJS.Timeout>();
+  const backgroundFetchRef = useRef<NodeJS.Timeout | null>(null);
   const performanceRef = useRef({
     requestCount: 0,
     cacheHits: 0,

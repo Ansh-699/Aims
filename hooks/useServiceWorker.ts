@@ -17,7 +17,7 @@ export function useServiceWorker() {
         
         // Register for background sync if supported
         if ('sync' in registration) {
-          await registration.sync.register('background-attendance-sync');
+          await (registration as any).sync.register('background-attendance-sync');
         }
         
         return registration;

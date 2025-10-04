@@ -1,32 +1,32 @@
-use thiserror::Error;
 use axum::response::IntoResponse;
+use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum AppError {
     #[error("External API error: {0}")]
     ExternalApiError(String),
-    
+
     #[error("Authentication failed: {0}")]
     AuthenticationError(String),
-    
+
     #[error("Invalid request: {0}")]
     ValidationError(String),
-    
+
     #[error("Cache error: {0}")]
     CacheError(String),
-    
+
     #[error("Timeout error: {0}")]
     TimeoutError(String),
-    
+
     #[error("Rate limit exceeded")]
     RateLimitError,
-    
+
     #[error("Internal server error: {0}")]
     InternalError(String),
-    
+
     #[error("Serialization error: {0}")]
     SerializationError(#[from] serde_json::Error),
-    
+
     #[error("HTTP error: {0}")]
     HttpError(#[from] reqwest::Error),
 }
@@ -55,7 +55,7 @@ impl IntoResponse for AppError {
             message: None,
             timestamp: chrono::Utc::now(),
         };
-        
+
         (status, axum::Json(error_response)).into_response()
     }
 }
